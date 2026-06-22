@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:velocity/data/category_type_data.dart';
 import 'package:velocity/data/quick_acess_data.dart';
+import 'package:velocity/data/recent_file_data.dart';
+import 'package:velocity/models/recent_file_item.dart';
 import '../core/theme/app_colors.dart';
 
 class HomePage extends StatelessWidget {
@@ -22,49 +24,140 @@ class HomePage extends StatelessWidget {
             searchBar(context),
             quickAccess(),
             categories(context),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 8.0),
-                        child: Text(
-                          "Categories",
-                          style: TextStyle(
-                            fontFamily: 'JetBrainsMonoVariable',
-                            fontSize: 20,
-                            fontVariations: const <FontVariation>[
-                              FontVariation('wght', 650.0),
-                              // Custom weight between 100.0 and 900.0
-                            ],
-                          ),
-                        ),
-                      ),
-                      Text(
-                        "View All",
+            recentFiles(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Padding recentFiles() {
+    return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8.0),
+                      child: Text(
+                        "RECENT FILES",
                         style: TextStyle(
                           fontFamily: 'JetBrainsMonoVariable',
                           fontSize: 20,
-                          color: LightColors.primary,
                           fontVariations: const <FontVariation>[
                             FontVariation('wght', 650.0),
                             // Custom weight between 100.0 and 900.0
                           ],
                         ),
                       ),
-                    ],
-                  ),
-                ],
-              ),
+                    ),
+                    Text(
+                      "View All",
+                      style: TextStyle(
+                        fontFamily: 'JetBrainsMonoVariable',
+                        fontSize: 20,
+                        color: LightColors.primary,
+                        fontVariations: const <FontVariation>[
+                          FontVariation('wght', 650.0),
+                          // Custom weight between 100.0 and 900.0
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: RecentFilesData.items.length,
+                  itemBuilder: (context, index) {
+                    final item = RecentFilesData.items[index];
+                    return Container(
+                      padding: const EdgeInsets.all(12),
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: LightColors.surface,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.06),
+                            blurRadius: 20,
+                            offset: const Offset(0, 7),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: LightColors.mutedText.withValues(
+                                alpha: 0.1,
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Center(
+                              child: FaIcon(item.icon, color: item.color),
+                            ),
+                          ),
+                          SizedBox(width: 10),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  item.name,
+                                  style: TextStyle(
+                                    fontFamily: 'InterVariable',
+                                    fontSize: 16,
+                                    fontVariations: const <FontVariation>[
+                                      FontVariation('wght', 600.0),
+                                      // Custom weight between 100.0 and 900.0
+                                    ],
+                                  ),
+                                ),
+                                Text(
+                                  'Converted from ${item.convertedFrom} • ${timeAgo(item.time)}',
+                                  style: TextStyle(
+                                    fontFamily: 'JetBrainsMonoVariable',
+                                    fontSize: 10,
+                                    fontVariations: const <FontVariation>[
+                                      FontVariation('wght', 500.0),
+                                      // Custom weight between 100.0 and 900.0
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Row(
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.download_outlined),
+                                onPressed: () {},
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.share_outlined),
+                                onPressed: () {},
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: 5),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
-    );
+          );
   }
 
   Padding categories(BuildContext context) {
@@ -76,7 +169,7 @@ class HomePage extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: 8.0),
             child: Text(
-              "Categories",
+              "CATEGORIES",
               style: TextStyle(
                 fontFamily: 'JetBrainsMonoVariable',
                 fontSize: 20,
@@ -159,7 +252,7 @@ class HomePage extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: 8.0),
             child: Text(
-              "Quick Access",
+              "QUICK ACCESS",
               style: TextStyle(
                 fontFamily: 'JetBrainsMonoVariable',
                 fontSize: 20,
@@ -249,5 +342,21 @@ class HomePage extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+String timeAgo(DateTime time) {
+  final diff = DateTime.now().difference(time);
+
+  if (diff.inSeconds < 60) {
+    return "just now";
+  } else if (diff.inMinutes < 60) {
+    return "${diff.inMinutes}m ago";
+  } else if (diff.inHours < 24) {
+    return "${diff.inHours}h ago";
+  } else if (diff.inDays < 7) {
+    return "${diff.inDays}d ago";
+  } else {
+    return "${time.day}/${time.month}/${time.year}";
   }
 }

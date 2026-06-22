@@ -1,5 +1,5 @@
 import 'package:velocity/core/theme/app_colors.dart';
-import '../models/category_type.dart';
+import '../models/category_type_item.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class CategoryTypeData {
