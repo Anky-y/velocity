@@ -32,7 +32,8 @@ class LightColors {
   static const surface = Colors.white;
 
   static const primary = Color(0xFF0058BC);
-  static const accent = Color(0xFF06B6D4);
+  static const secondary = Color(0xFF9E3D00);
+  static const accent = Color(0xFF4C4ACA);
 
   static const text = Color(0xFF111827);
   static const mutedText = Color(0xFF6B7280);
@@ -43,7 +44,8 @@ class DarkColors {
   static const surface = Color(0xFF111827);
 
   static const primary = Color(0xFF0058BC);
-  static const accent = Color(0xFF22D3EE);
+  static const secondary = Color(0xFF9E3D00);
+  static const accent = Color(0xFF4C4ACA);
 
   static const text = Color(0xFFF9FAFB);
   static const mutedText = Color(0xFF9CA3AF);
