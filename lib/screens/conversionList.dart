@@ -1,13 +1,47 @@
 import 'package:flutter/material.dart';
+import 'package:velocity/data/conversion_data.dart';
+import 'package:velocity/models/conversionListModel.dart';
 
-
-class conversionListScreen extends StatelessWidget {
-  const conversionListScreen({super.key});
+class ConversionListScreen extends StatelessWidget {
+  const ConversionListScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      
+    final selectedCategory = FileTypeCategory.image;
+    final config = ConversionData.registry[selectedCategory];
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(config?.pageTitle ?? "Conversion"),
+        leading: const IconButton(
+          onPressed: null,
+          icon: Icon(Icons.arrow_back),
+        ),
+      ),
+      body: ListView.builder(
+        itemCount: config?.options.length,
+        itemBuilder: (BuildContext context, int index) {
+          final option = config?.options[index];
+
+          return Card(
+            margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: ListTile(
+              leading: CircleAvatar(
+                backgroundColor: option?.iconColor.withAlpha(30),
+                child: Icon(option?.icon, color: option?.iconColor),
+              ),
+              title: Text(
+                option!.title,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text(option.description),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () {
+                print("Tapped on ${option.title}");
+              },
+            ),
+          );
+        },
+      ),
     );
   }
 }
