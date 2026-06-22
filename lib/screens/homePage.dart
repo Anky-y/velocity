@@ -28,136 +28,145 @@ class HomePage extends StatelessWidget {
           ],
         ),
       ),
+
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home_outlined),
+            label: "Home",
+          ),
+          BottomNavigationBarItem(icon: Icon(Icons.history), label: "Recent"),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: "Settings",
+          ),
+        ],
+      ),
     );
   }
 
   Padding recentFiles() {
     return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: Text(
-                        "RECENT FILES",
-                        style: TextStyle(
-                          fontFamily: 'JetBrainsMonoVariable',
-                          fontSize: 20,
-                          fontVariations: const <FontVariation>[
-                            FontVariation('wght', 650.0),
-                            // Custom weight between 100.0 and 900.0
-                          ],
-                        ),
-                      ),
-                    ),
-                    Text(
-                      "View All",
-                      style: TextStyle(
-                        fontFamily: 'JetBrainsMonoVariable',
-                        fontSize: 20,
-                        color: LightColors.primary,
-                        fontVariations: const <FontVariation>[
-                          FontVariation('wght', 650.0),
-                          // Custom weight between 100.0 and 900.0
-                        ],
-                      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 8.0),
+                child: Text(
+                  "RECENT FILES",
+                  style: TextStyle(
+                    fontFamily: 'JetBrainsMonoVariable',
+                    fontSize: 20,
+                    fontVariations: const <FontVariation>[
+                      FontVariation('wght', 650.0),
+                      // Custom weight between 100.0 and 900.0
+                    ],
+                  ),
+                ),
+              ),
+              Text(
+                "View All",
+                style: TextStyle(
+                  fontFamily: 'JetBrainsMonoVariable',
+                  fontSize: 20,
+                  color: LightColors.primary,
+                  fontVariations: const <FontVariation>[
+                    FontVariation('wght', 650.0),
+                    // Custom weight between 100.0 and 900.0
+                  ],
+                ),
+              ),
+            ],
+          ),
+          ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: RecentFilesData.items.length,
+            itemBuilder: (context, index) {
+              final item = RecentFilesData.items[index];
+              return Container(
+                padding: const EdgeInsets.all(12),
+                margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                decoration: BoxDecoration(
+                  color: LightColors.surface,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.06),
+                      blurRadius: 20,
+                      offset: const Offset(0, 7),
                     ),
                   ],
                 ),
-                ListView.separated(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: RecentFilesData.items.length,
-                  itemBuilder: (context, index) {
-                    final item = RecentFilesData.items[index];
-                    return Container(
-                      padding: const EdgeInsets.all(12),
-                      margin: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 6,
-                      ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 40,
                       decoration: BoxDecoration(
-                        color: LightColors.surface,
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.06),
-                            blurRadius: 20,
-                            offset: const Offset(0, 7),
-                          ),
-                        ],
+                        color: LightColors.mutedText.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      child: Row(
+                      child: Center(
+                        child: FaIcon(item.icon, color: item.color),
+                      ),
+                    ),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              color: LightColors.mutedText.withValues(
-                                alpha: 0.1,
-                              ),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Center(
-                              child: FaIcon(item.icon, color: item.color),
-                            ),
-                          ),
-                          SizedBox(width: 10),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  item.name,
-                                  style: TextStyle(
-                                    fontFamily: 'InterVariable',
-                                    fontSize: 16,
-                                    fontVariations: const <FontVariation>[
-                                      FontVariation('wght', 600.0),
-                                      // Custom weight between 100.0 and 900.0
-                                    ],
-                                  ),
-                                ),
-                                Text(
-                                  'Converted from ${item.convertedFrom} • ${timeAgo(item.time)}',
-                                  style: TextStyle(
-                                    fontFamily: 'JetBrainsMonoVariable',
-                                    fontSize: 10,
-                                    fontVariations: const <FontVariation>[
-                                      FontVariation('wght', 500.0),
-                                      // Custom weight between 100.0 and 900.0
-                                    ],
-                                  ),
-                                ),
+                          Text(
+                            item.name,
+                            style: TextStyle(
+                              fontFamily: 'InterVariable',
+                              fontSize: 16,
+                              fontVariations: const <FontVariation>[
+                                FontVariation('wght', 600.0),
+                                // Custom weight between 100.0 and 900.0
                               ],
                             ),
                           ),
-                          Row(
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.download_outlined),
-                                onPressed: () {},
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.share_outlined),
-                                onPressed: () {},
-                              ),
-                            ],
+                          Text(
+                            'Converted from ${item.convertedFrom} • ${timeAgo(item.time)}',
+                            style: TextStyle(
+                              fontFamily: 'JetBrainsMonoVariable',
+                              fontSize: 10,
+                              fontVariations: const <FontVariation>[
+                                FontVariation('wght', 500.0),
+                                // Custom weight between 100.0 and 900.0
+                              ],
+                            ),
                           ),
                         ],
                       ),
-                    );
-                  },
-                  separatorBuilder: (context, index) =>
-                      const SizedBox(height: 5),
+                    ),
+                    Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.download_outlined),
+                          onPressed: () {},
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.share_outlined),
+                          onPressed: () {},
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          );
+              );
+            },
+            separatorBuilder: (context, index) => const SizedBox(height: 5),
+          ),
+        ],
+      ),
+    );
   }
 
   Padding categories(BuildContext context) {
