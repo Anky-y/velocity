@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:velocity/data/conversion_data.dart';
 import 'package:velocity/models/conversionListModel.dart';
+import 'package:velocity/screens/conversionPage.dart';
 
 class ConversionListScreen extends StatelessWidget {
   const ConversionListScreen({super.key});
@@ -36,6 +37,14 @@ class ConversionListScreen extends StatelessWidget {
               subtitle: Text(option.description),
               trailing: const Icon(Icons.chevron_right),
               onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ConversionPage(),
+                    // This line attaches the argument payload to this specific route transition instance
+                    settings: RouteSettings(arguments: option),
+                  ),
+                );
                 print("Tapped on ${option.title}");
               },
             ),
