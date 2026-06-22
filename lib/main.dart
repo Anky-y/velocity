@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:velocity/core/theme/app_colors.dart';
+import 'package:velocity/screens/homePage.dart';
 import 'screens/conversionList.dart';
 
+
 void main() {
-  runApp(const MainApp());
+  runApp(MainApp());
 }
 
 class MainApp extends StatelessWidget {
@@ -10,6 +13,14 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(home: Scaffold(body: ConversionListScreen()));
+
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
+      themeMode: ThemeMode.system,
+      home: HomePage(),
+    );
+
   }
 }

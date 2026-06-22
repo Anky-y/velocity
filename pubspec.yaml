@@ -7,6 +7,7 @@ environment:
   sdk: ^3.12.2
 
 dependencies:
+  font_awesome_flutter: 11.0.0
   flutter:
     sdk: flutter
   dotted_border: ^2.1.0
@@ -18,3 +19,13 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/fonts/
+
+  fonts:
+    - family: InterVariable
+      fonts:
+        - asset: assets\fonts\Inter\Inter-VariableFont_opsz,wght.ttf
+    - family: JetBrainsMonoVariable
+      fonts:
+        - asset: assets\fonts\JetBrainsMono\JetBrainsMono[wght].ttf
