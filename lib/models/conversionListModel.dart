@@ -5,6 +5,7 @@ enum FileTypeCategory {
   video,
   document,
   audio,
+  utilities
 }
 
 class ConversionOption {

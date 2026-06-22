@@ -2,7 +2,6 @@ import "package:flutter/material.dart";
 import "package:velocity/models/conversionListModel.dart";
 
  
-
 class ConversionData {
   static final Map<FileTypeCategory, CategoryConfig> registry = {
     
@@ -72,6 +71,62 @@ class ConversionData {
           icon: Icons.picture_as_pdf,
           iconColor: Colors.blue,
           routeName: '/word_to_pdf',
+        ),
+      ],
+    ),
+
+    // --- AUDIO CONVERSIONS ---
+    FileTypeCategory.audio: const CategoryConfig(
+      pageTitle: 'Audio Conversions',
+      options: [
+        ConversionOption(
+          title: 'MP3 to WAV',
+          description: 'Convert to high-quality uncompressed audio',
+          icon: Icons.audio_file,
+          iconColor: Colors.teal,
+          routeName: '/mp3_to_wav',
+        ),
+        ConversionOption(
+          title: 'WAV to MP3',
+          description: 'Compress audio for smaller file sizes',
+          icon: Icons.music_note,
+          iconColor: Colors.deepPurple,
+          routeName: '/wav_to_mp3',
+        ),
+        ConversionOption(
+          title: 'M4A to MP3',
+          description: 'Convert Apple audio to universal MP3',
+          icon: Icons.library_music,
+          iconColor: Colors.pink,
+          routeName: '/m4a_to_mp3',
+        ),
+      ],
+    ),
+
+    // --- UTILITIES ---
+    FileTypeCategory.utilities: const CategoryConfig(
+      pageTitle: 'File Utilities',
+      options: [
+        ConversionOption(
+          title: 'Compress PDF',
+          description: 'Significantly reduce document file size',
+          icon: Icons.compress,
+          iconColor: Colors.blueGrey,
+          routeName: '/compress_pdf',
+        ),
+        ConversionOption(
+          title: 'Extract Audio',
+          description: 'Pull MP3 audio from a video file',
+          icon: Icons.music_video,
+          iconColor: Colors.cyan,
+          routeName: '/extract_audio',
+        ),
+        ConversionOption(
+          title: 'Resize Image',
+          description: 'Change image dimensions and scale',
+          icon: Icons.aspect_ratio,
+          iconColor: Colors.amber,
+          routeName: '/resize_image',
         ),
       ],
     ),

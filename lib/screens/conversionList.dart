@@ -4,17 +4,30 @@ import 'package:velocity/models/conversionListModel.dart';
 import 'package:velocity/screens/conversionPage.dart';
 
 class ConversionListScreen extends StatelessWidget {
-  const ConversionListScreen({super.key});
+  final FileTypeCategory selectedCategory; 
+
+  const ConversionListScreen({
+    super.key, 
+    required this.selectedCategory, 
+  });
 
   @override
   Widget build(BuildContext context) {
-    final selectedCategory = FileTypeCategory.image;
+    
     final config = ConversionData.registry[selectedCategory];
+    if (config == null) {
+      return Scaffold(
+        appBar: AppBar(title: const Text("Error")),
+        body: const Center(
+          child: Text("No conversion options found for this category."),
+        ),
+      );
+    }
     return Scaffold(
       appBar: AppBar(
-        title: Text(config?.pageTitle ?? "Conversion"),
-        leading: const IconButton(
-          onPressed: null,
+        title: Text(config.pageTitle),
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
           icon: Icon(Icons.arrow_back),
         ),
       ),

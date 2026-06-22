@@ -4,6 +4,7 @@ import 'package:velocity/data/category_type_data.dart';
 import 'package:velocity/data/quick_acess_data.dart';
 import 'package:velocity/data/recent_file_data.dart';
 import 'package:velocity/models/recent_file_item.dart';
+import 'package:velocity/screens/conversionList.dart';
 import '../core/theme/app_colors.dart';
 
 class HomePage extends StatelessWidget {
@@ -29,20 +30,18 @@ class HomePage extends StatelessWidget {
         ),
       ),
 
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            label: "Home",
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.history), label: "Recent"),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: "Settings",
-          ),
-        ],
-      ),
+      bottomNavigationBar: BottomNavBar(),
+    );
+  }
+
+  BottomNavigationBar BottomNavBar() {
+    return BottomNavigationBar(
+      type: BottomNavigationBarType.fixed,
+      items: const [
+        BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: "Home"),
+        BottomNavigationBarItem(icon: Icon(Icons.history), label: "Recent"),
+        BottomNavigationBarItem(icon: Icon(Icons.settings), label: "Settings"),
+      ],
     );
   }
 
@@ -203,45 +202,74 @@ class HomePage extends StatelessWidget {
               itemCount: CategoryTypeData.items.length,
               itemBuilder: (context, index) {
                 final item = CategoryTypeData.items[index];
-                return Container(
-                  height: 100,
-                  width: 100,
-                  decoration: BoxDecoration(
-                    color: LightColors.surface,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.06),
-                        blurRadius: 20,
-                        offset: const Offset(0, 7),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        height: 40,
-                        width: 40,
-                        decoration: BoxDecoration(
-                          color: item.color.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(50),
+                return InkWell(
+                  onTap: () {
+                    Navigator.push(
+        context,
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) => 
+              ConversionListScreen(selectedCategory: item.category),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            // Smooth slide upwards and fade transition
+            const begin = Offset(0.0, 0.1); 
+            const end = Offset.zero;
+            const curve = Curves.easeOutCubic;
+
+            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+            var offsetAnimation = animation.drive(tween);
+            
+            return FadeTransition(
+              opacity: animation,
+              child: SlideTransition(
+                position: offsetAnimation,
+                child: child,
+              ),
+            );
+          },
+          transitionDuration: const Duration(milliseconds: 350),
+        ),
+      );
+                  },
+                  child: Container(
+                    height: 100,
+                    width: 100,
+                    decoration: BoxDecoration(
+                      color: LightColors.surface,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.06),
+                          blurRadius: 20,
+                          offset: const Offset(0, 7),
                         ),
-                        child: Center(child: FaIcon(item.icon)),
-                      ),
-                      Text(
-                        item.name,
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 15,
-                          fontVariations: const <FontVariation>[
-                            FontVariation('wght', 500.0),
-                            // Custom weight between 100.0 and 900.0
-                          ],
+                      ],
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          height: 40,
+                          width: 40,
+                          decoration: BoxDecoration(
+                            color: item.color.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(50),
+                          ),
+                          child: Center(child: FaIcon(item.icon)),
                         ),
-                      ),
-                    ],
+                        Text(
+                          item.name,
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 15,
+                            fontVariations: const <FontVariation>[
+                              FontVariation('wght', 500.0),
+                              // Custom weight between 100.0 and 900.0
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },
