@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:velocity/core/theme/app_colors.dart';
-import 'package:velocity/screens/archive/homePage.dart';
-import 'screens/archive/conversionList.dart';
+import 'package:velocity/screens/filePickerPage.dart';
 
 
 void main() {
@@ -19,7 +18,7 @@ class MainApp extends StatelessWidget {
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: ThemeMode.system,
-      home: HomePage(),
+      home: ConversionPage(),
     );
 
   }
