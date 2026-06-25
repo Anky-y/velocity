@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:velocity/data/conversion_data.dart';
-import 'package:velocity/models/conversionListModel.dart';
-import 'package:velocity/screens/conversionPage.dart';
+import 'package:velocity/data/archive/conversion_data.dart';
+import 'package:velocity/models/archive/conversionListModel.dart';
+import 'package:velocity/screens/archive/conversionPage.dart';
 
 class ConversionListScreen extends StatelessWidget {
   final FileTypeCategory selectedCategory;

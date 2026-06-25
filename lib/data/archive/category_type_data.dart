@@ -1,7 +1,7 @@
 import 'package:velocity/core/theme/app_colors.dart';
-import '../models/category_type_item.dart';
+import '../../models/archive/category_type_item.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import '../models/conversionListModel.dart';
+import '../../models/archive/conversionListModel.dart';
 
 class CategoryTypeData {
   static final List<CategoryTypeItem> items = [

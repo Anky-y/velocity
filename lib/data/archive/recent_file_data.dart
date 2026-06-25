@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:velocity/models/recent_file_item.dart';
+import 'package:velocity/models/archive/recent_file_item.dart';
 
 class RecentFilesData {
   static final List<RecentFileItem> items = [

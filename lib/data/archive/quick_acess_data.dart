@@ -1,5 +1,5 @@
 import 'package:velocity/core/theme/app_colors.dart';
-import '../models/quick_access_item.dart';
+import '../../models/archive/quick_access_item.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class QuickAccessData {

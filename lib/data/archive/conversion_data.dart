@@ -1,5 +1,5 @@
 import "package:flutter/material.dart";
-import "package:velocity/models/conversionListModel.dart";
+import "package:velocity/models/archive/conversionListModel.dart";
 
 class ConversionData {
   static final Map<FileTypeCategory, CategoryConfig> registry = {

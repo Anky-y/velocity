@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:velocity/core/theme/app_colors.dart';
-import 'package:velocity/screens/homePage.dart';
-import 'screens/conversionList.dart';
+import 'package:velocity/screens/archive/homePage.dart';
+import 'screens/archive/conversionList.dart';
 
 
 void main() {

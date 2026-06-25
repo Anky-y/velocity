@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:velocity/data/category_type_data.dart';
-import 'package:velocity/data/quick_acess_data.dart';
-import 'package:velocity/data/recent_file_data.dart';
-import 'package:velocity/models/recent_file_item.dart';
-import 'package:velocity/screens/conversionList.dart';
-import '../core/theme/app_colors.dart';
+import 'package:velocity/data/archive/category_type_data.dart';
+import 'package:velocity/data/archive/quick_acess_data.dart';
+import 'package:velocity/data/archive/recent_file_data.dart';
+import 'package:velocity/models/archive/recent_file_item.dart';
+import 'package:velocity/screens/archive/conversionList.dart';
+import '../../core/theme/app_colors.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
