@@ -205,30 +205,36 @@ class HomePage extends StatelessWidget {
                 return InkWell(
                   onTap: () {
                     Navigator.push(
-        context,
-        PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) => 
-              ConversionListScreen(selectedCategory: item.category),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            // Smooth slide upwards and fade transition
-            const begin = Offset(0.0, 0.1); 
-            const end = Offset.zero;
-            const curve = Curves.easeOutCubic;
+                      context,
+                      PageRouteBuilder(
+                        pageBuilder: (context, animation, secondaryAnimation) =>
+                            ConversionListScreen(
+                              selectedCategory: item.category,
+                            ),
+                        transitionsBuilder:
+                            (context, animation, secondaryAnimation, child) {
+                              // Smooth slide upwards and fade transition
+                              const begin = Offset(0.0, 0.1);
+                              const end = Offset.zero;
+                              const curve = Curves.easeOutCubic;
 
-            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-            var offsetAnimation = animation.drive(tween);
-            
-            return FadeTransition(
-              opacity: animation,
-              child: SlideTransition(
-                position: offsetAnimation,
-                child: child,
-              ),
-            );
-          },
-          transitionDuration: const Duration(milliseconds: 350),
-        ),
-      );
+                              var tween = Tween(
+                                begin: begin,
+                                end: end,
+                              ).chain(CurveTween(curve: curve));
+                              var offsetAnimation = animation.drive(tween);
+
+                              return FadeTransition(
+                                opacity: animation,
+                                child: SlideTransition(
+                                  position: offsetAnimation,
+                                  child: child,
+                                ),
+                              );
+                            },
+                        transitionDuration: const Duration(milliseconds: 350),
+                      ),
+                    );
                   },
                   child: Container(
                     height: 100,

@@ -1,12 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum FileTypeCategory {
-  image,
-  video,
-  document,
-  audio,
-  utilities
-}
+enum FileTypeCategory { image, video, document, audio, utilities }
 
 class ConversionOption {
   final String title;
@@ -29,8 +23,5 @@ class CategoryConfig {
   final String pageTitle;
   final List<ConversionOption> options;
 
-  const CategoryConfig({
-    required this.pageTitle,
-    required this.options,
-  });
+  const CategoryConfig({required this.pageTitle, required this.options});
 }
