@@ -1,10 +1,8 @@
 import "package:flutter/material.dart";
 import "package:velocity/models/conversionListModel.dart";
 
- 
 class ConversionData {
   static final Map<FileTypeCategory, CategoryConfig> registry = {
-    
     // --- IMAGE CONVERSIONS ---
     FileTypeCategory.image: const CategoryConfig(
       pageTitle: 'Image Conversions',

@@ -4,16 +4,12 @@ import 'package:velocity/models/conversionListModel.dart';
 import 'package:velocity/screens/conversionPage.dart';
 
 class ConversionListScreen extends StatelessWidget {
-  final FileTypeCategory selectedCategory; 
+  final FileTypeCategory selectedCategory;
 
-  const ConversionListScreen({
-    super.key, 
-    required this.selectedCategory, 
-  });
+  const ConversionListScreen({super.key, required this.selectedCategory});
 
   @override
   Widget build(BuildContext context) {
-    
     final config = ConversionData.registry[selectedCategory];
     if (config == null) {
       return Scaffold(
