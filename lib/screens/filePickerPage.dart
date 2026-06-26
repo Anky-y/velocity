@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:velocity/models/archive/conversionListModel.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:velocity/models/fileOperationModel.dart';
