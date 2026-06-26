@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:velocity/core/theme/app_colors.dart';
 import 'package:velocity/data/operation_type_data.dart';
 import 'package:velocity/models/fileOperationModel.dart';
+import 'package:velocity/screens/filePickerPage.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -13,7 +14,7 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         surfaceTintColor: Colors.transparent,
-        title: Text("Velocity"),
+        title: Text("Velocity".toUpperCase()),
         centerTitle: true,
       ),
       body: homeBody(context),
@@ -47,84 +48,99 @@ class HomePage extends StatelessWidget {
 
   Padding operationTypeCard(BuildContext context, OperationType item) {
     return Padding(
-                      padding: const EdgeInsets.only(bottom: 16),
-                      child: Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(18),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.surface,
-                          borderRadius: BorderRadius.circular(18),
-                          border: Border.all(
-                            color:
-                                Theme.of(context).brightness ==
-                                    Brightness.dark
-                                ? const Color(0xFF2A2D33)
-                                : const Color(0xFFE5E7EB),
-                            width: 1,
-                          ),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .primary
-                                        .withValues(alpha: 0.12),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Icon(
-                                    item.icon,
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.primary,
-                                    size: 22,
-                                  ),
-                                ),
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.outline,
+            width: 1,
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.primary.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    item.icon,
+                    color: Theme.of(context).colorScheme.primary,
+                    size: 22,
+                  ),
+                ),
 
-                                TextButton(
-                                  onPressed: () {},
-                                  child: const Text("Start"),
-                                ),
-                              ],
-                            ),
-
-                            const SizedBox(height: 18),
-
-                            Text(
-                              item.name,
-                              style: Theme.of(context).textTheme.titleMedium
-                                  ?.copyWith(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                            ),
-
-                            const SizedBox(height: 8),
-
-                            Text(
-                              item.description,
-                              style: TextStyle(
-                                color:
-                                    Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? Colors.grey[400]
-                                    : Colors.grey[600],
-                                height: 1.4,
-                              ),
-                            ),
-                          ],
-                        ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const FilePickerPage(),
                       ),
                     );
-  }
+                  },
+                  child: const Text(
+                    "Start",
+                    style: TextStyle(
+                      fontFamily: 'JetBrainsMonoVariable',
+                      fontSize: 20,
+                      fontVariations: const <FontVariation>[
+                        FontVariation('wght', 400.0),
+                        // Custom weight between 100.0 and 900.0
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
 
+            const SizedBox(height: 18),
+
+            Text(
+              item.name,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'JetBrainsMonoVariable',
+                fontVariations: const <FontVariation>[
+                  FontVariation('wght', 200.0),
+                  // Custom weight between 100.0 and 900.0
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 8),
+
+            Text(
+              item.description,
+              style: TextStyle(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.grey[400]
+                    : Colors.grey[600],
+                height: 1.4,
+                fontFamily: "InterVariable",
+                fontVariations: const <FontVariation>[
+                  FontVariation('wght', 500.0),
+                  // Custom weight between 100.0 and 900.0
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   Padding heroText() {
     return Padding(
@@ -152,7 +168,7 @@ class HomePage extends StatelessWidget {
           Text(
             "Choose a powerful utility tool to process your files",
             style: TextStyle(
-              fontFamily: 'JetBrainsMonoVariable',
+              fontFamily: 'InterVariable',
               fontSize: 18,
               fontVariations: const <FontVariation>[
                 FontVariation('wght', 500.0),
