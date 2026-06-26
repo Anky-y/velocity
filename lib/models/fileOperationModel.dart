@@ -1,13 +1,29 @@
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/widgets.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:velocity/data/formatRegistry.dart';
 
-enum OperationType { convert, compress, merge }
+
+
+class OperationType {
+  final String name;
+  final String description;
+  final IconData icon;
+
+  const OperationType({
+    required this.name,
+    required this.description,
+    required this.icon,
+  });
+}
 
 class FileOperationItem {
   final String id;
-  final PlatformFile file;             // The actual file picked
-  final String originalExtension;      // e.g., 'png'
-  String? selectedTargetExtension;     // e.g., 'pdf' (null if user hasn't picked yet)
+  final PlatformFile file; // The actual file picked
+  final String originalExtension; // e.g., 'png'
+  String?
+  selectedTargetExtension; // e.g., 'pdf' (null if user hasn't picked yet)
 
   FileOperationItem({
     required this.id,
@@ -23,7 +39,7 @@ class FileOperationItem {
 
   // Helper to check if this item is ready for processing
   bool get isReady => selectedTargetExtension != null;
-  
+
   // Helper to check if a universal format is supported by this file
   bool supportsFormat(String format) {
     return availableTargetExtensions.contains(format);
