@@ -124,6 +124,7 @@ class AppTheme {
       secondary: DarkColors.secondary,
       surfaceContainer: DarkColors.elevatedSurface,
       outline: DarkColors.outline,
+      surfaceContainerHigh: DarkColors.highElevatedSurface,
     ),
     textTheme: const TextTheme(
       displayLarge: TextStyle(
@@ -197,6 +198,7 @@ class DarkColors {
   static const background = Color(0xFF1A1D22);
   static const surface = Color(0xFF121417);
   static const elevatedSurface = Color(0xFF212124);
+  static const highElevatedSurface = Color(0xFF33353A);
 
   static const primary = Color(0xFF0D9488);
   static const secondary = Color(0xFF0B0C0E);

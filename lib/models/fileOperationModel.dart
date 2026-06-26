@@ -1,10 +1,6 @@
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:velocity/data/format_registry.dart';
-
-
 
 class OperationType {
   final String name;
@@ -31,13 +27,26 @@ class FileOperationItem {
     required this.file,
     required this.originalExtension,
     this.selectedTargetExtension,
-    required this.availableTargetExtensions
+    required this.availableTargetExtensions,
   });
 
   // Dynamically lookup what this specific file can be converted into
   // List<String> get availableTargetExtensions {
   //   return FormatRegistry.conversionRules[originalExtension] ?? [];
   // }
+
+  String get fileMediaType {
+    final ext = originalExtension.toLowerCase();
+
+    // Check common formats explicitly if Registry doesn't map backward:
+    if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'].contains(ext))
+      return 'image';
+    if (['mp3', 'wav', 'm4a', 'flac', 'ogg'].contains(ext)) return 'audio';
+    if (['mp4', 'mkv', 'mov', 'avi', 'webm'].contains(ext)) return 'video';
+
+    // Default fallback group
+    return 'document';
+  }
 
   // Helper to check if this item is ready for processing
   bool get isReady => selectedTargetExtension != null;
@@ -47,3 +56,5 @@ class FileOperationItem {
     return availableTargetExtensions.contains(format);
   }
 }
+
+
