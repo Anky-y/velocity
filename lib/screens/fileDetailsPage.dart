@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:velocity/core/helper/sharedWidgets.dart';
+import 'package:velocity/core/helper/util.dart';
+import 'package:velocity/data/format_registry.dart';
 import 'package:velocity/models/fileOperationModel.dart';
 
-class FileDetailsPage extends StatelessWidget {
+class FileDetailsPage extends StatefulWidget {
   final List<FileOperationItem> operations;
 
   const FileDetailsPage({super.key, required this.operations});
 
+  @override
+  State<FileDetailsPage> createState() => _FileDetailsPageState();
+}
+
+class _FileDetailsPageState extends State<FileDetailsPage> {
+  String? universalSelectedFormat;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,33 +49,44 @@ class FileDetailsPage extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          "Apply to ${operations.length} files",
+                          "Apply to ${widget.operations.length} files",
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                       ],
                     ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.grey[800]!),
-                      ),
-                      child: Row(
-                        children: [
-                          Text(
-                            "PDF\nDocument",
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                          const SizedBox(width: 8),
-                          Icon(
-                            Icons.keyboard_arrow_down,
-                            color: Colors.grey[400],
-                          ),
-                        ],
-                      ),
+
+                    FormatSelectorButton(
+                      batchExtensions: widget.operations
+                          .map((op) => op.originalExtension)
+                          .toList(),
+
+                      // 1. Tell the button to display this variable!
+                      initialValue: universalSelectedFormat,
+
+                      onFormatSelected: (universalOutputFormat) {
+                        print(
+                          "Batch setting matching files to: $universalOutputFormat",
+                        );
+
+                        setState(() {
+                          // 2. Update the visual text for the universal button itself
+                          universalSelectedFormat = universalOutputFormat;
+
+                          // 3. Update all the individual list items (your existing logic)
+                          for (var operation in widget.operations) {
+                            final validTargets = FormatRegistry.getTargets(
+                              operation.originalExtension,
+                            );
+
+                            if (validTargets.contains(
+                              universalOutputFormat.toLowerCase(),
+                            )) {
+                              operation.selectedTargetExtension =
+                                  universalOutputFormat;
+                            }
+                          }
+                        });
+                      },
                     ),
                   ],
                 ),
@@ -75,13 +95,66 @@ class FileDetailsPage extends StatelessWidget {
 
               // --- QUEUE HEADER ---
               Text(
-                "Queue (${operations.length})",
+                "Queue (${widget.operations.length})",
                 style: Theme.of(context).textTheme.labelLarge,
               ),
               const SizedBox(height: 8),
 
               // --- QUEUE LIST ---
-              Expanded(child: Text("data")),
+              // Expanded(child: Text("data")),
+              Expanded(
+                child: ListView.separated(
+                  itemCount: widget.operations.length,
+                  separatorBuilder: (BuildContext context, int index) {
+                    return SizedBox(height: 10);
+                  },
+                  itemBuilder: (BuildContext context, int index) {
+                    final operation = widget.operations[index];
+                    return Container(
+                      height: 50,
+                      child: Row(
+                        children: [
+                          Container(height: 30, width: 30),
+                          Expanded(
+                            child: Column(
+                              children: [
+                                Text(
+                                  operation.file.name,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                Text(
+                                  "${operation.file.size.toReadableSize} · ${operation.originalExtension.toUpperCase()}",
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
+                              ],
+                            ),
+                          ),
+                          //Container(height: 30, width: 30),
+                          FormatSelectorButton(
+                            singleExtension: operation.originalExtension,
+
+                            // 1. THIS IS THE CRITICAL LINE! It tells the button what text to display based on your state.
+                            initialValue: operation.selectedTargetExtension,
+
+                            onFormatSelected: (outputFormat) {
+                              // 2. THIS IS THE TRIGGER. It forces the screen to redraw with the new initialValue.
+                              setState(() {
+                                operation.selectedTargetExtension =
+                                    outputFormat;
+                              });
+
+                              print(
+                                "Convert individual file to: $outputFormat",
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+
               // --- CONVERT BUTTON ---
               ElevatedButton.icon(
                 onPressed: () {},
@@ -109,6 +182,7 @@ class FileDetailsPage extends StatelessWidget {
     );
   }
 }
+
 //   // Helper widget builder for standard queue rows
 //   Widget _buildQueueItem({
 //     required IconData icon,
