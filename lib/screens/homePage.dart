@@ -14,7 +14,17 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         surfaceTintColor: Colors.transparent,
-        title: Text("Velocity"),
+        title: Text(
+          "Velocity",
+          style: TextStyle(
+            fontFamily: 'JetBrainsMonoVariable',
+            fontSize: 25,
+            fontVariations: const <FontVariation>[
+              FontVariation('wght', 100.0),
+              // Custom weight between 100.0 and 900.0
+            ],
+          ),
+        ),
         centerTitle: true,
       ),
       body: homeBody(context),
@@ -92,7 +102,17 @@ class HomePage extends StatelessWidget {
                       ),
                     );
                   },
-                  child: const Text("Start"),
+                  child: const Text(
+                    "Start",
+                    style: TextStyle(
+                      fontFamily: 'JetBrainsMonoVariable',
+                      fontSize: 20,
+                      fontVariations: const <FontVariation>[
+                        FontVariation('wght', 400.0),
+                        // Custom weight between 100.0 and 900.0
+                      ],
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -104,6 +124,11 @@ class HomePage extends StatelessWidget {
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
+                fontFamily: 'JetBrainsMonoVariable',
+                fontVariations: const <FontVariation>[
+                  FontVariation('wght', 200.0),
+                  // Custom weight between 100.0 and 900.0
+                ],
               ),
             ),
 
@@ -116,6 +141,11 @@ class HomePage extends StatelessWidget {
                     ? Colors.grey[400]
                     : Colors.grey[600],
                 height: 1.4,
+                fontFamily: "InterVariable",
+                fontVariations: const <FontVariation>[
+                  FontVariation('wght', 500.0),
+                  // Custom weight between 100.0 and 900.0
+                ],
               ),
             ),
           ],
@@ -150,7 +180,7 @@ class HomePage extends StatelessWidget {
           Text(
             "Choose a powerful utility tool to process your files",
             style: TextStyle(
-              fontFamily: 'JetBrainsMonoVariable',
+              fontFamily: 'InterVariable',
               fontSize: 18,
               fontVariations: const <FontVariation>[
                 FontVariation('wght', 500.0),
@@ -166,6 +196,7 @@ class HomePage extends StatelessWidget {
 
 Container bottomNavBar() {
   return Container(
+    
     decoration: BoxDecoration(
       border: Border(top: BorderSide(color: Color(0xFF45464D), width: 0.5)),
     ),

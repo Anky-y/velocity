@@ -13,6 +13,17 @@ class AppTheme {
     ),
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: LightColors.background,
+      selectedLabelStyle: TextStyle(
+        fontFamily: 'JetBrainsMonoVariable',
+        fontSize: 12,
+        fontVariations: [FontVariation('wght', 650)],
+      ),
+
+      unselectedLabelStyle: TextStyle(
+        fontFamily: 'JetBrainsMonoVariable',
+        fontSize: 12,
+        fontVariations: [FontVariation('wght', 650)],
+      ),
     ),
     colorScheme: const ColorScheme.light(
       primary: LightColors.primary,
@@ -33,6 +44,19 @@ class AppTheme {
     ),
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: DarkColors.background,
+      selectedItemColor: LightColors.primary,
+      unselectedItemColor: LightColors.mutedText,
+      selectedLabelStyle: TextStyle(
+        fontFamily: 'JetBrainsMonoVariable',
+        fontSize: 12,
+        fontVariations: [FontVariation('wght', 650)],
+      ),
+
+      unselectedLabelStyle: TextStyle(
+        fontFamily: 'JetBrainsMonoVariable',
+        fontSize: 12,
+        fontVariations: [FontVariation('wght', 650)],
+      ),
     ),
     colorScheme: const ColorScheme.dark(
       primary: DarkColors.primary,
@@ -56,7 +80,7 @@ class LightColors {
 
 class DarkColors {
   static const background = Color(0xFF1A1D22);
-  static const surface = Color(0xFF15181C);
+  static const surface = Color(0xFF121417);
   static const primary = Color(0xFF0D9488);
   static const secondary = Color(0xFF9E3D00);
   static const accent = Color(0xFF4C4ACA);

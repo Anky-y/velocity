@@ -5,7 +5,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:velocity/screens/archive/fileDetailsPage.dart';
 import 'package:velocity/screens/homePage.dart';
 
-
 class FilePickerPage extends StatelessWidget {
   const FilePickerPage({super.key});
 
@@ -20,12 +19,11 @@ class FilePickerPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("File Converter"),
+        title: Text("Converter"),
         centerTitle: true,
         leading: BackButton(
           color: Colors.grey,
           onPressed: () {
-            print("backbutton pressed woo");
             Navigator.of(context).pop();
           },
         ),
@@ -34,20 +32,19 @@ class FilePickerPage extends StatelessWidget {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.only(top: 20.0),
               child: Text(
                 "Select Files to Convert",
                 style: TextStyle(fontSize: 24),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.only(top: 8.0),
               child: Text(
                 "Convert documents, images, and audio seamlessly.",
                 style: TextStyle(fontSize: 15),
               ),
             ),
-            SizedBox(height: 70),
             // Use Expanded so the widget dynamically fills the remaining vertical/horizontal space
             Expanded(
               child: RepaintBoundary(
@@ -85,11 +82,6 @@ class FilePickerPage extends StatelessWidget {
                     }
                   },
                   child: Container(
-                    // Generous, uniform margin away from the screen borders
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 24.0,
-                      vertical: 16.0,
-                    ),
                     decoration: BoxDecoration(
                       // Darker background matching your UI screenshot
                       color: const Color(0xFF121212),
@@ -194,7 +186,7 @@ class FilePickerPage extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: bottomNavBar()
+      bottomNavigationBar: bottomNavBar(),
     );
   }
 }
