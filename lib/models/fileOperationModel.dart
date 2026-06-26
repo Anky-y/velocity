@@ -2,7 +2,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:velocity/data/formatRegistry.dart';
+import 'package:velocity/data/format_registry.dart';
 
 
 
@@ -24,18 +24,20 @@ class FileOperationItem {
   final String originalExtension; // e.g., 'png'
   String?
   selectedTargetExtension; // e.g., 'pdf' (null if user hasn't picked yet)
+  final List<String> availableTargetExtensions;
 
   FileOperationItem({
     required this.id,
     required this.file,
     required this.originalExtension,
     this.selectedTargetExtension,
+    required this.availableTargetExtensions
   });
 
   // Dynamically lookup what this specific file can be converted into
-  List<String> get availableTargetExtensions {
-    return FormatRegistry.conversionRules[originalExtension] ?? [];
-  }
+  // List<String> get availableTargetExtensions {
+  //   return FormatRegistry.conversionRules[originalExtension] ?? [];
+  // }
 
   // Helper to check if this item is ready for processing
   bool get isReady => selectedTargetExtension != null;

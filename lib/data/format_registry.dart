@@ -5,16 +5,24 @@ class FormatRegistry {
     'png': ['jpg', 'jpeg', 'webp', 'pdf', 'gif'],
     'jpg': ['png', 'webp', 'pdf', 'gif'],
     'jpeg': ['png', 'webp', 'pdf', 'gif'],
-    
+
     // Documents
     'pdf': ['docx', 'jpg', 'png'],
     'docx': ['pdf', 'txt'],
-    
+
     // Video/Audio
     'mp4': ['gif', 'mp3', 'mov', 'wav'],
     'mp3': ['wav', 'm4a'],
     'wav': ['mp3', 'm4a'],
   };
+
+  static bool isSupported(String extension) {
+    return FormatRegistry.conversionRules.containsKey(extension);
+  }
+
+  static List<String> getTargets(String extension) {
+    return FormatRegistry.conversionRules[extension] ?? [];
+  }
 
   // Optional: For the "Universal Output" dropdown, we might want a list of ALL possible outputs
   static List<String> get allPossibleTargets {

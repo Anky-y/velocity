@@ -14,17 +14,7 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         surfaceTintColor: Colors.transparent,
-        title: Text(
-          "Velocity",
-          style: TextStyle(
-            fontFamily: 'JetBrainsMonoVariable',
-            fontSize: 25,
-            fontVariations: const <FontVariation>[
-              FontVariation('wght', 100.0),
-              // Custom weight between 100.0 and 900.0
-            ],
-          ),
-        ),
+        title: Text("Velocity".toUpperCase()),
         centerTitle: true,
       ),
       body: homeBody(context),
@@ -66,9 +56,7 @@ class HomePage extends StatelessWidget {
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(18),
           border: Border.all(
-            color: Theme.of(context).brightness == Brightness.dark
-                ? const Color(0xFF2A2D33)
-                : const Color(0xFFE5E7EB),
+            color: Theme.of(context).colorScheme.outline,
             width: 1,
           ),
         ),
@@ -196,7 +184,6 @@ class HomePage extends StatelessWidget {
 
 Container bottomNavBar() {
   return Container(
-    
     decoration: BoxDecoration(
       border: Border(top: BorderSide(color: Color(0xFF45464D), width: 0.5)),
     ),
