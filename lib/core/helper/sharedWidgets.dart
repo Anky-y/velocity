@@ -4,12 +4,14 @@ import 'package:velocity/data/format_registry.dart';
 class FormatSelectorButton extends StatefulWidget {
   final String? singleExtension;       // Pass this for single file mode
   final List<String>? batchExtensions; // Pass this for universal mode
+  final String? initialValue;          // Tracks parent state changes
   final Function(String) onFormatSelected;
 
   const FormatSelectorButton({
     super.key,
     this.singleExtension,
     this.batchExtensions,
+    this.initialValue,
     required this.onFormatSelected,
   });
 
@@ -18,8 +20,7 @@ class FormatSelectorButton extends StatefulWidget {
 }
 
 class _FormatSelectorButtonState extends State<FormatSelectorButton> {
-  String selectedFormat = "Convert to";
-
+  
   // Compute what options are available based on inputs passed down
   Map<String, List<String>> _getAvailableOptions() {
     List<String> flatTargets = [];
@@ -57,7 +58,7 @@ class _FormatSelectorButtonState extends State<FormatSelectorButton> {
             child: MultiLayerMenu(
               data: currentData,
               onItemSelected: (item) {
-                setState(() => selectedFormat = item);
+                // Pass the selection up to the parent right away
                 widget.onFormatSelected(item);
                 Navigator.pop(context);
               },
@@ -71,6 +72,9 @@ class _FormatSelectorButtonState extends State<FormatSelectorButton> {
   @override
   Widget build(BuildContext context) {
     final computedOptions = _getAvailableOptions();
+    
+    // Determine the label text dynamically based on incoming parent properties
+    final buttonText = widget.initialValue ?? "Convert to";
 
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
@@ -83,7 +87,7 @@ class _FormatSelectorButtonState extends State<FormatSelectorButton> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(selectedFormat),
+          Text(buttonText),
           const SizedBox(width: 4),
           const Icon(Icons.arrow_drop_down, size: 18),
         ],
