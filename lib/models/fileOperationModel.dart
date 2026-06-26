@@ -14,6 +14,8 @@ class OperationType {
   });
 }
 
+enum ConversionStatus { pending, processing, done, failed }
+
 class FileOperationItem {
   final String id;
   final PlatformFile file; // The actual file picked
@@ -22,12 +24,17 @@ class FileOperationItem {
   selectedTargetExtension; // e.g., 'pdf' (null if user hasn't picked yet)
   final List<String> availableTargetExtensions;
 
+  ConversionStatus status;
+  double progress;
+
   FileOperationItem({
     required this.id,
     required this.file,
     required this.originalExtension,
     this.selectedTargetExtension,
     required this.availableTargetExtensions,
+    this.status = ConversionStatus.pending,
+    this.progress = 0.0,
   });
 
   // Dynamically lookup what this specific file can be converted into
@@ -56,5 +63,3 @@ class FileOperationItem {
     return availableTargetExtensions.contains(format);
   }
 }
-
-

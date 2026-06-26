@@ -4,6 +4,7 @@ import 'package:velocity/core/helper/sharedWidgets.dart';
 import 'package:velocity/core/helper/util.dart';
 import 'package:velocity/data/format_registry.dart';
 import 'package:velocity/models/fileOperationModel.dart';
+import 'package:velocity/screens/conversionProgressPage.dart';
 
 class FileDetailsPage extends StatefulWidget {
   final List<FileOperationItem> operations;
@@ -199,7 +200,22 @@ class _FileDetailsPageState extends State<FileDetailsPage> {
 
               // --- CONVERT BUTTON ---
               ElevatedButton.icon(
-                onPressed: () {},
+                onPressed:
+                    widget.operations.any(
+                      (op) => op.selectedTargetExtension != null,
+                    )
+                    ? () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ConversionProgressPage(
+                              operations: widget.operations,
+                            ),
+                          ),
+                        );
+                      }
+                      
+                    : null,
                 icon: const Icon(Icons.sync, color: Colors.black),
                 label: Text(
                   "CONVERT ${widget.operations.length} FILES",
