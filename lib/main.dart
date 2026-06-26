@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:velocity/core/theme/app_colors.dart';
 import 'package:velocity/screens/filePickerPage.dart';
+import 'package:velocity/screens/homePage.dart';
 
 
 void main() {
@@ -12,7 +13,6 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
@@ -20,6 +20,5 @@ class MainApp extends StatelessWidget {
       themeMode: ThemeMode.system,
       home: ConversionPage(),
     );
-
   }
 }
