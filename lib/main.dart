@@ -18,7 +18,7 @@ class MainApp extends StatelessWidget {
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: ThemeMode.system,
-      home: ConversionPage(),
+      home: HomePage(),
     );
   }
 }
