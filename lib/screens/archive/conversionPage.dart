@@ -28,7 +28,7 @@ class ConversionPage extends StatelessWidget {
               final allowedExts = getAllowedExtensions(option.title);
               final targetExt = getTargetExtension(option.title);
 
-              FilePickerResult? result = await FilePicker.platform.pickFiles(
+              FilePickerResult? result = await FilePicker.pickFiles(
                 allowMultiple: true,
                 type: allowedExts.isNotEmpty ? FileType.custom : FileType.any,
                 allowedExtensions: allowedExts.isNotEmpty ? allowedExts : null,
