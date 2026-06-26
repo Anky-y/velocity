@@ -9,7 +9,6 @@ class ConversionPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
     List<String> getAllowedExtensions(String title) {
       if (title.contains(' to ')) {
         return [title.split(' to ').first.toLowerCase()];
@@ -18,119 +17,160 @@ class ConversionPage extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text("File Converter")),
+      appBar: AppBar(
+        title: Text("File Converter"),
+        centerTitle: true,
+        leading: BackButton(
+          color: Colors.grey,
+          onPressed: () {
+            print("backbutton pressed woo");
+            //Navigator.of(context).pop();
+          },
+        ),
+      ),
       body: Center(
-        child: RepaintBoundary(
-          child: GestureDetector(
-            onTap: () async {
-              print("file selection thing clicked");
-              final allowedExts = getAllowedExtensions("png to jpeg");
-              final targetExt = getTargetExtension("png to jpeg");
+        child: Column(
+          children: [
+            
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text("Select Files to Convert",style: TextStyle(fontSize: 24, )),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text("Convert documents, images, and audio seamlessly.",style: TextStyle(fontSize: 15)),
+            ),
+            SizedBox(height: 70),
+            // Use Expanded so the widget dynamically fills the remaining vertical/horizontal space
+Expanded(
+  child: RepaintBoundary(
+    child: GestureDetector(
+      onTap: () async {
+        print("file selection thing clicked");
+        final allowedExts = getAllowedExtensions("png to jpeg");
+        final targetExt = getTargetExtension("png to jpeg");
 
-              FilePickerResult? result = await FilePicker.platform.pickFiles(
-                allowMultiple: true,
-                type: allowedExts.isNotEmpty ? FileType.custom : FileType.any,
-                allowedExtensions: allowedExts.isNotEmpty ? allowedExts : null,
-              );
+        FilePickerResult? result = await FilePicker.pickFiles(
+          type: allowedExts.isNotEmpty ? FileType.custom : FileType.any,
+          allowedExtensions: allowedExts.isNotEmpty ? allowedExts : null,
+        );
 
-              if (result != null) {
-                List<PlatformFile> selectedFiles = result.files;
+        if (result != null) {
+          List<PlatformFile> selectedFiles = result.files;
 
-                if (context.mounted) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => FileDetailsPage(
-                        files: selectedFiles,
-                        targetFormat:
-                            targetExt, // Passing the destination format string
-                      ),
+          if (context.mounted) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => FileDetailsPage(
+                  files: selectedFiles,
+                  targetFormat: targetExt,
+                ),
+              ),
+            );
+          }
+        } else {
+          print("User canceled the picker");
+        }
+      },
+      child: Container(
+        // Generous, uniform margin away from the screen borders
+        margin: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+        decoration: BoxDecoration(
+          // Darker background matching your UI screenshot
+          color: const Color(0xFF121212), 
+          borderRadius: BorderRadius.circular(16),
+        ),
+        // Padding inside the outer card container
+        padding: const EdgeInsets.all(16.0),
+        child: DottedBorder(
+          color: Colors.grey.withOpacity(0.3), // Subdued dotted border color
+          strokeWidth: 1.5,
+          dashPattern: const [6, 4],
+          borderType: BorderType.RRect,
+          radius: const Radius.circular(16),
+          child: Container(
+            // Forces the inner container to expand and match its parent boundaries completely
+            width: double.infinity,
+            height: double.infinity,
+            color: Colors.transparent,
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // 1. Sleek circular badge wrapper for the icon
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF005A53), // Teal circle background
+                      shape: BoxShape.circle,
                     ),
-                  );
-                }
-              } else {
-                print("User canceled the picker");
-              }
-            }, //the one tap thingy
-            child: Container(
-              margin: const EdgeInsets.all(10.0),
-              width: 250.0,
-              height: 280.0,
-              decoration: BoxDecoration(
-                color: const Color.fromARGB(235, 255, 255, 255),
-                borderRadius: BorderRadius.circular(25),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    spreadRadius: 2,
-                    blurRadius: 2,
-                    offset: const Offset(0, 4),
+                    child: const Icon(
+                      Icons.file_upload,
+                      size: 28, 
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
+                  // 2. Bold title text
+                  const Text(
+                    'Tap to browse',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+
+                  // 3. Subtitle description
+                  Text(
+                    'or drag and drop files here',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[400],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  // 4. "Multiple files supported" Chip pill
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.layers_outlined,
+                          size: 14,
+                          color: Colors.grey[300],
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          'Multiple files supported',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey[300],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
-              child: Center(
-                child: DottedBorder(
-                  color: const Color.fromARGB(
-                    255,
-                    188,
-                    188,
-                    188,
-                  ), // Border color
-                  strokeWidth: 2, // Border thickness
-                  dashPattern: const [4, 4],
-                  borderType: BorderType.RRect, // Rounded rectangle border
-                  radius: const Radius.circular(12), // Border corner radius
-                  child: Container(
-                    height: 230,
-                    width: 200,
-                    color: Colors.transparent,
-                    child: Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize
-                            .min, // Shrinks column height to fit its children
-                        children: [
-                          // 1. File upload icon added as the first element
-                          const Icon(
-                            Icons.upload_file,
-                            size: 48, // Adjust size as needed
-                            color: Colors.blue, // Adjust color as needed
-                          ),
-
-                          // Added a tiny bit of space between icon and text
-                          const SizedBox(height: 8),
-
-                          // 2. Styled text decorations
-                          const Text(
-                            'Tap to select file',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black87,
-                            ),
-                          ),
-
-                          const SizedBox(
-                            height: 4,
-                          ), // Space between the two texts
-
-                          const Text(
-                            'Secure local processing',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontStyle: FontStyle.italic,
-                              color: Colors.grey,
-                              decoration: TextDecoration
-                                  .underline, // Example of a literal decoration (underline)
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
             ),
           ),
+        ),
+      ),
+    ),
+  ),
+),
+          ],
         ),
       ),
     );
