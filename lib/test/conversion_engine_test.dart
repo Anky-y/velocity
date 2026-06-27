@@ -102,7 +102,8 @@ void main() {
             fromExtension: sourceExt,
             targetExtension: targetExt,
             onProgress:
-                (_) {}, // Quieting logging layers to keep analytics clear
+                (_) {},
+                 // Quieting logging layers to keep analytics clear
           );
 
           stopwatch.stop();

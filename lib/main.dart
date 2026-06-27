@@ -5,7 +5,7 @@ import 'package:velocity/test/test_ui_runner.dart';
 
 
 void main() {
-  runApp(const TestUiRunnerApp());
+  runApp(MainApp());
 }
 
 class MainApp extends StatelessWidget {

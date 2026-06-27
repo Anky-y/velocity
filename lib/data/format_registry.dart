@@ -4,14 +4,17 @@ class FormatRegistry {
     'jpg': ['png', 'gif', 'bmp', 'ico'],
     'jpeg': ['png', 'gif', 'bmp', 'ico'],
     'webp': ['png', 'jpg', 'jpeg', 'gif', 'bmp'],
-    'gif': ['png', 'jpg', 'jpeg', 'bmp'],
+    'gif': ['png', 'jpg', 'jpeg', 'bmp',"mp4", "mov"],
     'bmp': ['png', 'jpg', 'jpeg', 'gif'],
     'ico': ['png', 'jpg', 'jpeg'],
 
     // 'pdf': ['docx', 'jpg', 'png'],
     // 'docx': ['pdf', 'txt'],
 
-    // 'mp4': ['gif', 'mp3', 'mov', 'wav'],
+    'mp4': ['gif', 'mp3', 'mov', 'wav'],
+    "mp3": ["wav"],
+    "mov": ["mp4", "gif", "mp3", "wav"],
+    "wav": ["mp3"]
     // 'mp3': ['wav', 'm4a'],
     // 'wav': ['mp3', 'm4a'],
   };
