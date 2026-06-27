@@ -75,7 +75,7 @@ class _FileDetailsPageState extends State<FileDetailsPage> {
 
                           // 3. Update all the individual list items (your existing logic)
                           for (var operation in widget.operations) {
-                            final validTargets = FormatRegistry.getTargets(
+                            final validTargets = FormatRegistry.getAvailableTargets(
                               operation.originalExtension,
                             );
 

@@ -30,7 +30,7 @@ class _FormatSelectorButtonState extends State<FormatSelectorButton> {
       flatTargets = FormatRegistry.getCommonTargets(widget.batchExtensions!);
     } else if (widget.singleExtension != null) {
       // Single File Mode
-      flatTargets = FormatRegistry.getTargets(widget.singleExtension!);
+      flatTargets = FormatRegistry.getAvailableTargets(widget.singleExtension!);
     }
 
     // Convert flat targets ['jpg', 'pdf'] into categorized structure
