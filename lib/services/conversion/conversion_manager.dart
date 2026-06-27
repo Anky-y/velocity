@@ -16,6 +16,7 @@ class ConversionManager {
     required String filePath,
     required String fromExtension,
     required String targetExtension,
+    void Function(double progress)? onProgress, // <-- 1. ADD THIS LINE
   }) async {
     final file = File(filePath);
     if (!await file.exists()) {
@@ -34,6 +35,7 @@ class ConversionManager {
     }
 
     // Hand off the operation to the exact class responsible for it
-    return await converter.convert(file, targetExtension);
+    return await converter.convert(file, targetExtension, onProgress: onProgress,
+    );
   }
 }

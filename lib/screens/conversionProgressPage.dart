@@ -1,7 +1,10 @@
+import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:velocity/models/fileOperationModel.dart';
 import 'package:velocity/screens/conversion_completed_page.dart';
 import 'package:velocity/services/conversion/conversion_manager.dart';
+import 'package:path/path.dart' as p;
 
 class ConversionProgressPage extends StatefulWidget {
   final List<FileOperationItem> operations;
@@ -27,28 +30,50 @@ class _ConversionProgressPageState extends State<ConversionProgressPage> {
         continue;
       }
 
+      debugPrint("DEBUG: ${operation.status}");
+
       // 1. Mark item active and rebuild screen
       setState(() {
         operation.status = ConversionStatus.processing;
         operation.progress = 0.0;
       });
+      debugPrint("DEBUG 2: ${operation.status}");
 
       try {
         // 2. Call your existing conversion engine
-        await ConversionManager.execute(
+        File convertedFile = await ConversionManager.execute(
           filePath: operation.file.path!,
           fromExtension: operation.originalExtension,
           targetExtension: operation.selectedTargetExtension!,
+          onProgress: (progressValue) {
+            // Every time the image package processes a step, this runs!
+            setState(() {
+              operation.progress = progressValue;
+              debugPrint("DEBUG 3: ${operation.status}");
+            });
+          },
         );
+
+        debugPrint("DEBUG 4: ${operation.status}");
 
         // 3. Mark current item as finished
         setState(() {
+          // Update your model path to point to the newly converted physical disk file!
+          operation.file = PlatformFile(
+            path: convertedFile.path,
+            name: p.basename(convertedFile.path),
+            size: convertedFile.lengthSync(), // Real updated file size
+            bytes: null,
+          );
+
           operation.status = ConversionStatus.done;
           operation.progress = 1.0;
+          debugPrint("DEBUG 5: ${operation.status}");
         });
       } catch (error) {
         setState(() {
           operation.status = ConversionStatus.failed;
+          debugPrint("DEBUG 5: ${operation.status}");
         });
       }
     }
@@ -58,11 +83,19 @@ class _ConversionProgressPageState extends State<ConversionProgressPage> {
       await Future.delayed(const Duration(milliseconds: 500));
 
       if (mounted) {
+        // Filter the explicitly successful items right here!
+        final completelyFinishedOps = widget.operations
+            .where((op) => op.status == ConversionStatus.done)
+            .toList();
+
+        print(
+          "Passing ${completelyFinishedOps.length} successfully converted files to completed page.",
+        );
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) =>
-                ConversionCompletedPage(operations: widget.operations),
+                ConversionCompletedPage(operations: completelyFinishedOps),
           ),
         );
       }

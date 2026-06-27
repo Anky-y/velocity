@@ -1,17 +1,82 @@
 import 'package:flutter/material.dart';
+import 'package:gal/gal.dart';
+import 'package:open_filex/open_filex.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:velocity/models/fileOperationModel.dart';
 
 class ConversionCompletedPage extends StatelessWidget {
   final List<FileOperationItem> operations;
 
   const ConversionCompletedPage({super.key, required this.operations});
+  // --- MASS DOWNLOAD LOGIC ---
+  Future<void> _downloadAllFiles(BuildContext context) async {
+    try {
+      int savedMediaCount = 0;
+
+      for (var item in operations) {
+        final path = item.file.path;
+        if (path == null) continue;
+
+        // Check if it's an image or video to save to public gallery
+        final type = item.fileMediaType;
+        if (type == 'image') {
+          await Gal.putImage(path);
+          savedMediaCount++;
+        } else if (type == 'video') {
+          await Gal.putVideo(path);
+          savedMediaCount++;
+        } else {
+          // Fallback: If it's a document/audio, share_plus or a custom directory picker is required
+          // For this clean UI, we'll let share handles docs, or alert user
+        }
+      }
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              "Successfully saved $savedMediaCount media items to your Gallery!",
+            ),
+            backgroundColor: const Color(0xFF64FFDA),
+          ),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Error saving files: $e"),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
+    }
+  }
+
+  // --- SYSTEM SHARE SHEET LOGIC ---
+  void _shareAllFiles() {
+    final filesToShare = operations
+        .where((op) => op.file.path != null)
+        .map((op) => XFile(op.file.path!))
+        .toList();
+
+    if (filesToShare.isNotEmpty) {
+      // Invoke sharing using the new Instance + ShareParams approach
+      SharePlus.instance.share(
+        ShareParams(
+          files: filesToShare,
+          text: 'Check out my converted files from Velocity!',
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     // Filter out only the successfully converted files
-    final completedOps = operations
-        .where((op) => op.status == ConversionStatus.done)
-        .toList();
+    // final completedOps = operations
+    //     .where((op) => op.status == ConversionStatus.done)
+    //     .toList();
 
     return Scaffold(
       backgroundColor: const Color(0xFF121315), // Deep dark theme background
@@ -81,7 +146,7 @@ class ConversionCompletedPage extends StatelessWidget {
               const SizedBox(height: 8),
               Center(
                 child: Text(
-                  "${completedOps.length} files converted successfully.",
+                  "${operations.length} files processed",
                   style: const TextStyle(color: Colors.grey, fontSize: 14),
                 ),
               ),
@@ -89,9 +154,7 @@ class ConversionCompletedPage extends StatelessWidget {
 
               // --- DUAL MAIN ACTION ACTION BUTTONS ---
               ElevatedButton.icon(
-                onPressed: () {
-                  // TODO: Wire up local mass file storage downloading logic
-                },
+                onPressed: () => _downloadAllFiles(context),
                 icon: const Icon(
                   Icons.file_download_outlined,
                   color: Color(0xFF121315),
@@ -116,9 +179,7 @@ class ConversionCompletedPage extends StatelessWidget {
               const SizedBox(height: 12),
 
               OutlinedButton.icon(
-                onPressed: () {
-                  // TODO: Hook up system sharing sheet sheets
-                },
+                onPressed: _shareAllFiles,
                 icon: const Icon(
                   Icons.share_outlined,
                   color: Colors.white,
@@ -181,11 +242,11 @@ class ConversionCompletedPage extends StatelessWidget {
                       ),
                       child: ListView.separated(
                         shrinkWrap: true,
-                        itemCount: completedOps.length,
+                        itemCount: operations.length,
                         separatorBuilder: (_, __) =>
                             const Divider(color: Colors.white10, height: 1),
                         itemBuilder: (context, index) {
-                          final item = completedOps[index];
+                          final item = operations[index];
 
                           return Padding(
                             padding: const EdgeInsets.symmetric(
@@ -236,8 +297,35 @@ class ConversionCompletedPage extends StatelessWidget {
 
                                 // Text Action trigger anchor
                                 TextButton(
-                                  onPressed: () {
-                                    // TODO: Wire up opening individual single files directly
+                                  onPressed: () async {
+                                    if (item.file.path != null) {
+                                      // Open the file from its temporary cache path directly
+                                      final result = await OpenFilex.open(
+                                        item.file.path!,
+                                      );
+
+                                      if (result.type != ResultType.done) {
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              "Could not open file: ${result.message}",
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                    } else {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            "File path is missing!",
+                                          ),
+                                        ),
+                                      );
+                                    }
                                   },
                                   child: const Text(
                                     "Open",

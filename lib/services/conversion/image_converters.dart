@@ -1,8 +1,9 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import 'base_converter.dart';
-
+import 'package:image/image.dart' as img;
 /// Handles PNG to JPG specifically
 class PngToJpgConverter implements FileConverter {
   @override
@@ -11,18 +12,39 @@ class PngToJpgConverter implements FileConverter {
     String targetExtension, {
     void Function(double progress)? onProgress,
   }) async {
-    // Simulate progression steps for your progress bars
-    for (int i = 1; i <= 10; i++) {
-      await Future.delayed(const Duration(milliseconds: 200));
-      if (onProgress != null) onProgress(i / 10.0);
-    }
+    // 1. Tell the UI we are beginning the read/decode phase
+    if (onProgress != null) onProgress(0.1);
 
+    // 2. Read the file bytes directly from the hard drive path
+    final Uint8List fileBytes = await inputFile.readAsBytes();
+    if (onProgress != null) onProgress(0.3);
+
+    // 3. Decode the raw compressed PNG stream into a pixel buffer map
+    final img.Image? decodedImage = img.decodePng(fileBytes);
+
+    if (decodedImage == null) {
+      throw Exception("Failed to decode PNG image data.");
+    }
+    if (onProgress != null) onProgress(0.6);
+
+    // 4. Re-encode the raw pixel map into a compressed JPG format byte stream
+    // quality: 85 provides an excellent balance of file size reduction and clear visibility
+    final List<int> jpgBytes = img.encodeJpg(decodedImage, quality: 85);
+    if (onProgress != null) onProgress(0.8);
+
+    // 5. Prepare the output file path destination inside the app temporary sandbox
     final tempDir = await getTemporaryDirectory();
-    final outputPath = p.join(
-      tempDir.path,
-      "${p.basenameWithoutExtension(inputFile.path)}.$targetExtension",
-    );
-    return await File(outputPath).writeAsString("Done");
+    final originalName = p.basenameWithoutExtension(inputFile.path);
+    final outputPath = p.join(tempDir.path, "$originalName.$targetExtension");
+
+    // 6. Save the actual byte arrays to the file system
+    final File outputFile = File(outputPath);
+    await outputFile.writeAsBytes(jpgBytes);
+
+    // 7. Complete the loading indicators
+    if (onProgress != null) onProgress(1.0);
+
+    return outputFile;
   }
 }
 

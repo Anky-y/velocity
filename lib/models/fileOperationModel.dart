@@ -18,7 +18,7 @@ enum ConversionStatus { pending, processing, done, failed }
 
 class FileOperationItem {
   final String id;
-  final PlatformFile file; // The actual file picked
+  PlatformFile file; // The actual file picked
   final String originalExtension; // e.g., 'png'
   String?
   selectedTargetExtension; // e.g., 'pdf' (null if user hasn't picked yet)
@@ -61,5 +61,27 @@ class FileOperationItem {
   // Helper to check if a universal format is supported by this file
   bool supportsFormat(String format) {
     return availableTargetExtensions.contains(format);
+  }
+
+  FileOperationItem copyWith({
+    String? id,
+    PlatformFile? file,
+    String? originalExtension,
+    String? selectedTargetExtension,
+    List<String>? availableTargetExtensions,
+    ConversionStatus? status,
+    double? progress,
+  }) {
+    return FileOperationItem(
+      id: id ?? this.id,
+      file: file ?? this.file,
+      originalExtension: originalExtension ?? this.originalExtension,
+      selectedTargetExtension:
+          selectedTargetExtension ?? this.selectedTargetExtension,
+      availableTargetExtensions:
+          availableTargetExtensions ?? this.availableTargetExtensions,
+      status: status ?? this.status,
+      progress: progress ?? this.progress,
+    );
   }
 }
