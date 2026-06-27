@@ -55,9 +55,8 @@ class FilePickerPage extends StatelessWidget {
                       List<FileOperationItem> operations = [];
                       for (final file in result.files) {
                         final extension = (file.extension ?? "").toLowerCase();
-                        final supportedTargets = FormatRegistry.getTargets(
-                          extension,
-                        );
+                        final supportedTargets =
+                            FormatRegistry.getAvailableTargets(extension);
                         if (supportedTargets.isEmpty) {
                           continue;
                         }
@@ -66,7 +65,6 @@ class FilePickerPage extends StatelessWidget {
                             id: file.identifier ?? file.name,
                             file: file,
                             originalExtension: extension,
-                            availableTargetExtensions: supportedTargets,
                           ),
                         );
                       }
