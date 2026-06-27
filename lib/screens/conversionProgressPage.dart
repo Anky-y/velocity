@@ -20,7 +20,9 @@ class _ConversionProgressPageState extends State<ConversionProgressPage> {
   void initState() {
     super.initState();
     // Start the conversion loop immediately as soon as the page opens
+    WidgetsBinding.instance.addPostFrameCallback((_) {
     _runConversionPipeline();
+  });
   }
 
   Future<void> _runConversionPipeline() async {
@@ -40,11 +42,12 @@ class _ConversionProgressPageState extends State<ConversionProgressPage> {
       debugPrint("DEBUG 2: ${operation.status}");
 
       try {
+        final String fileType = operation.fileMediaType;
         // 2. Call your existing conversion engine
         File convertedFile = await ConversionManager.execute(
           filePath: operation.file.path!,
           fromExtension: operation.originalExtension,
-          targetExtension: operation.selectedTargetExtension!,
+          targetExtension: operation.selectedTargetExtension!, fileType: fileType,
           onProgress: (progressValue) {
             // Every time the image package processes a step, this runs!
             setState(() {
@@ -73,7 +76,7 @@ class _ConversionProgressPageState extends State<ConversionProgressPage> {
       } catch (error) {
         setState(() {
           operation.status = ConversionStatus.failed;
-          debugPrint("DEBUG 5: ${operation.status}");
+          debugPrint("DEBUG 5: ${operation.status} ${error}");
         });
       }
     }
