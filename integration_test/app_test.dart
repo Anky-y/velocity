@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image/image.dart' as img;
 import 'package:path/path.dart' as p;
@@ -68,6 +69,8 @@ void main() {
       // Fetch every target paired to this exact format
       final targets = FormatRegistry.getAvailableTargets(sourceExt);
 
+      final fileType = FormatRegistry.extensionToCategory[sourceExt];
+
       for (String targetExt in targets) {
         // Skip webp outputs since we can only read webp on-device
         if (targetExt.toLowerCase() == 'webp') continue;
@@ -78,6 +81,7 @@ void main() {
           filePath: sourceFile.path,
           fromExtension: sourceExt,
           targetExtension: targetExt,
+          fileType: fileType,
           onProgress: (_) {},
         );
 

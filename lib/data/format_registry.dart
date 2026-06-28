@@ -1,41 +1,81 @@
 class FormatRegistry {
   static const Map<String, List<String>> conversionRules = {
-    'png': ['jpg', 'jpeg', 'gif', 'bmp', 'ico'],
-    'jpg': ['png', 'gif', 'bmp', 'ico'],
-    'jpeg': ['png', 'gif', 'bmp', 'ico'],
-    'webp': ['png', 'jpg', 'jpeg', 'gif', 'bmp'],
-    'gif': ['png', 'jpg', 'jpeg', 'bmp',"mp4", "mov"],
-    'bmp': ['png', 'jpg', 'jpeg', 'gif'],
+    // Images
+    'png': ['jpg', 'jpeg', 'gif', 'bmp', 'ico', 'webp', 'tiff'],
+    'jpg': ['png', 'gif', 'bmp', 'ico', 'webp', 'tiff'],
+    'jpeg': ['png', 'gif', 'bmp', 'ico', 'webp', 'tiff'],
+    'webp': ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'tiff'],
+    'bmp': ['png', 'jpg', 'jpeg', 'gif', 'webp'],
     'ico': ['png', 'jpg', 'jpeg'],
+    'tiff': ['png', 'jpg', 'jpeg', 'webp', 'bmp'],
+    'heic': ['png', 'jpg', 'jpeg', 'webp'],
 
-    // 'pdf': ['docx', 'jpg', 'png'],
-    // 'docx': ['pdf', 'txt'],
+    // Animations
+    'gif': ['png', 'jpg', 'jpeg', 'bmp', 'webp', 'mp4', 'mov', 'webm'],
 
-    'mp4': ['gif', 'mp3', 'mov', 'wav'],
-    "mp3": ["wav"],
-    "mov": ["mp4", "gif", "mp3", "wav"],
-    "wav": ["mp3"]
-    // 'mp3': ['wav', 'm4a'],
-    // 'wav': ['mp3', 'm4a'],
+    // Video
+    'mp4': [
+      'gif',
+      'mov',
+      'webm',
+      'avi',
+      'mkv',
+      'mp3',
+      'wav',
+      'm4a',
+      'flac',
+      'ogg',
+    ],
+    'mov': [
+      'mp4',
+      'gif',
+      'webm',
+      'avi',
+      'mkv',
+      'mp3',
+      'wav',
+      'm4a',
+      'flac',
+      'ogg',
+    ],
+    'webm': ['mp4', 'mov', 'gif', 'avi', 'mkv', 'mp3', 'wav', 'ogg'],
+    'avi': ['mp4', 'mov', 'gif', 'mkv', 'webm', 'mp3', 'wav'],
+    'mkv': ['mp4', 'mov', 'gif', 'avi', 'webm', 'mp3', 'wav'],
+
+    // Audio
+    'mp3': ['wav', 'm4a', 'flac', 'ogg'],
+    'wav': ['mp3', 'm4a', 'flac', 'ogg'],
+    'm4a': ['mp3', 'wav', 'flac', 'ogg'],
+    'flac': ['mp3', 'wav', 'm4a', 'ogg'],
+    'ogg': ['mp3', 'wav', 'm4a', 'flac'],
   };
 
   // Updated to distinctly separate Video and Audio formats
   static const Map<String, String> extensionToCategory = {
-    // Images
+    // 🖼️ Images
     'png': 'Image',
     'jpg': 'Image',
     'jpeg': 'Image',
     'webp': 'Image',
-    'gif': 'Image',
+    'gif': 'Image', // Kept as image category for standard asset registration
+    'bmp': 'Image',
+    'ico': 'Image',
+    'tiff': 'Image',
+    'heic': 'Image',
 
-    // Documents
-    'pdf': 'Document', 'docx': 'Document', 'txt': 'Document',
+    // 🎬 Video Formats
+    'mp4': 'Video',
+    'mov': 'Video',
+    'webm': 'Video',
+    'avi': 'Video',
+    'mkv': 'Video',
 
-    // Video Formats
-    'mp4': 'Video', 'mov': 'Video',
-
-    // Audio Formats
-    'mp3': 'Audio', 'wav': 'Audio', 'm4a': 'Audio',
+    // 🎵 Audio Formats
+    'mp3': 'Audio',
+    'wav': 'Audio',
+    'm4a': 'Audio',
+    'flac': 'Audio',
+    'ogg': 'Audio',
   };
 
   static bool isSupported(String extension) {
