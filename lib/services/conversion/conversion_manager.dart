@@ -4,6 +4,7 @@ import 'package:image/image.dart' as img;
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:velocity/data/format_registry.dart';
+import 'package:velocity/services/conversion/document_converters.dart';
 import 'image_converters.dart';
 import 'videoAudio_converters.dart'; // 🚀 Added import for the new video converter worker
 import 'dart:async';
@@ -31,8 +32,15 @@ class ConversionManager {
         'temp_conv_${DateTime.now().millisecondsSinceEpoch}.$cleanTarget';
     final String outputPath = p.join(tempDir.path, outputFileName);
 
+    if (sourceCategory == 'Document' || targetCategory == 'Document') {
+      return await DocumentConverters.convertDocumentFormat(
+        filePath: filePath,
+        outputPath: outputPath,
+        targetExtension: cleanTarget,
+      );
+    }
     // 3. ELEGANT TRAFFIC ROUTING:
-    if (sourceCategory == 'Image' &&
+    else if (sourceCategory == 'Image' &&
         targetCategory == 'Image' &&
         cleanFrom != 'gif' &&
         cleanTarget != 'gif' &&

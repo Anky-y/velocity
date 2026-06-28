@@ -48,7 +48,7 @@ void main() {
           sourceBytes = img.BmpEncoder().encode(dummyImg);
           break;
         case 'ico':
-          sourceBytes = img.IcoEncoder().encode(dummyImg);
+          sourceBytes = img.encodeIco(dummyImg);
           break;
         case 'jpg':
         case 'jpeg':

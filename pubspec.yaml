@@ -20,7 +20,10 @@ dependencies:
   share_plus: ^13.2.0
   path: ^1.9.0
   ffmpeg_kit_flutter_new: ^4.2.1
-
+  docx_to_text: ^1.0.1
+  webview_flutter: ^4.8.0 
+  printing: ^5.13.2
+  flutter_native_html_to_pdf: ^3.0.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -32,6 +35,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/fonts/
+    - assets/converter/
 
   fonts:
     - family: InterVariable

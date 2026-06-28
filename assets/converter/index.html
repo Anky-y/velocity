@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <script src="mammoth.browser.min.js"></script>
+    <script>
+        function convertDocxBytesToHtml(base64Str) {
+            try {
+                // 1. Decode the base64 string stream sent from Dart back into binary
+                var binaryString = window.atob(base64Str);
+                var len = binaryString.length;
+                var bytes = new Uint8Array(len);
+                for (var i = 0; i < len; i++) {
+                    bytes[i] = binaryString.charCodeAt(i);
+                }
+                
+                // 2. Run Mammoth engine over the raw binary array buffer
+                mammoth.convertToHtml({arrayBuffer: bytes.buffer})
+                    .then(function(result) {
+                        // 3. Pass the perfectly styled HTML back to Flutter channel
+                        DocxBridge.postMessage(result.value);
+                    })
+                    .catch(function(err) {
+                        DocxBridge.postMessage("ERROR: " + err.message);
+                    });
+            } catch (e) {
+                DocxBridge.postMessage("ERROR: " + e.message);
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="status">Offline Engine Standby...</div>
+</body>
+</html>

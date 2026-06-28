@@ -48,6 +48,10 @@ class FormatRegistry {
     'm4a': ['mp3', 'wav', 'flac', 'ogg'],
     'flac': ['mp3', 'wav', 'm4a', 'ogg'],
     'ogg': ['mp3', 'wav', 'm4a', 'flac'],
+
+    // Document
+    'pdf': ['txt'],
+    'docx': ['pdf'],
   };
 
   // Updated to distinctly separate Video and Audio formats
@@ -76,6 +80,11 @@ class FormatRegistry {
     'm4a': 'Audio',
     'flac': 'Audio',
     'ogg': 'Audio',
+
+    // Document Formats
+    'pdf': 'Document',
+    'docx': 'Document',
+    'txt': 'Document',
   };
 
   static bool isSupported(String extension) {

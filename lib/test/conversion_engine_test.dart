@@ -41,7 +41,7 @@ void main() {
           } else if (sourceExt.toLowerCase() == 'bmp') {
             bytes = Uint8List.fromList(img.BmpEncoder().encode(dummyImg));
           } else if (sourceExt.toLowerCase() == 'ico') {
-            bytes = Uint8List.fromList(img.IcoEncoder().encode(dummyImg));
+            bytes = Uint8List.fromList(img.encodeIco(dummyImg));
           } else {
             bytes = Uint8List.fromList(img.JpegEncoder().encode(dummyImg));
           }

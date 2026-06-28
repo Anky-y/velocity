@@ -103,7 +103,7 @@ class _TestUiRunnerAppState extends State<TestUiRunnerApp> {
             sourceBytes = Uint8List.fromList(img.BmpEncoder().encode(dummyImg));
             break;
           case 'ico':
-            sourceBytes = Uint8List.fromList(img.IcoEncoder().encode(dummyImg));
+            sourceBytes = Uint8List.fromList(img.encodeIco(dummyImg));
             break;
           default:
             sourceBytes = Uint8List.fromList(
