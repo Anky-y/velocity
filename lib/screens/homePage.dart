@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:velocity/core/theme/app_colors.dart';
 import 'package:velocity/data/operation_type_data.dart';
 import 'package:velocity/models/fileOperationModel.dart';
+import 'package:velocity/screens/SettingsPage.dart';
 import 'package:velocity/screens/filePickerPage.dart';
 
 class HomePage extends StatelessWidget {
@@ -18,7 +19,7 @@ class HomePage extends StatelessWidget {
         centerTitle: true,
       ),
       body: homeBody(context),
-      bottomNavigationBar: bottomNavBar(),
+      bottomNavigationBar: bottomNavBar(context, 0),
     );
   }
 
@@ -182,13 +183,33 @@ class HomePage extends StatelessWidget {
   }
 }
 
-Container bottomNavBar() {
+Container bottomNavBar(BuildContext context, int currentIndex) {
   return Container(
     decoration: BoxDecoration(
       border: Border(top: BorderSide(color: Color(0xFF45464D), width: 0.5)),
     ),
     child: BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
+      currentIndex: currentIndex,
+      onTap: (index) {if (index == currentIndex) return; 
+
+        if (index == 0) {
+          // Home Tab
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const HomePage()),
+          );
+        } else if (index == 1) {
+          // Recent Tab (Placeholder print statement)
+          print("Recents tab tapped!");
+        } else if (index == 2) {
+          // Settings Tab
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const settingsPage()),
+          );
+        }
+      },
       items: const [
         BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: "Home"),
         BottomNavigationBarItem(icon: Icon(Icons.history), label: "Recent"),
