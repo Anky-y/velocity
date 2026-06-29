@@ -6,7 +6,6 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:flutter_native_html_to_pdf/flutter_native_html_to_pdf.dart';
 
 class DocumentConverters {
-  // Keep a reference to the controller so it doesn't get garbage collected
   static WebViewController? _activeController;
 
   static Future<File> convertDocumentFormat({
@@ -32,34 +31,28 @@ class DocumentConverters {
     String inputPath,
     String outputPath,
   ) async {
-    print("🚀 [CONVERTER] Starting pipeline execution for: $inputPath");
+    print("🚀 [CONVERTER] Starting Mammoth pipeline execution for: $inputPath");
     final completer = Completer<String>();
 
     try {
-      // Step 1: Read Bytes
+      // Step 1: Read raw original bytes (No zip manipulation needed for Mammoth!)
       print("📦 [CONVERTER] Step 1: Reading file bytes from disk...");
       final fileBytes = await File(inputPath).readAsBytes();
       final base64Document = base64Encode(fileBytes);
-      print("📦 [CONVERTER] Success: Read ${fileBytes.length} bytes.");
 
       // Step 2: Initialize Webview
-      print(
-        "🌐 [CONVERTER] Step 2: Spawning WebViewController configuration...",
-      );
+      print("🌐 [CONVERTER] Step 2: Spawning WebViewController...");
       _activeController = WebViewController()
         ..setJavaScriptMode(JavaScriptMode.unrestricted)
         ..addJavaScriptChannel(
           'DocxBridge',
           onMessageReceived: (JavaScriptMessage message) {
-            print("📩 [CONVERTER] JavaScript Bridge callback triggered!");
             if (message.message.startsWith("ERROR:")) {
-              print(
-                "❌ [CONVERTER] JS Engine reported internal error: ${message.message}",
-              );
+              print("❌ [CONVERTER] Mammoth Engine Error: ${message.message}");
               completer.completeError(Exception(message.message));
             } else {
               print(
-                "📄 [CONVERTER] JS Engine successfully extracted HTML string layout.",
+                "📄 [CONVERTER] Mammoth successfully flattened document to HTML stream.",
               );
               completer.complete(message.message);
             }
@@ -67,79 +60,144 @@ class DocumentConverters {
         );
 
       // Step 3: Load Asset
-      print("📂 [CONVERTER] Step 3: Attempting to load index.html asset...");
+      print("📂 [CONVERTER] Step 3: Loading Mammoth HTML canvas asset...");
       await _activeController!.loadFlutterAsset('assets/converter/index.html');
-      print("📂 [CONVERTER] Asset load command dispatched.");
 
       // Step 4: Warmup Delay
       print("⏳ [CONVERTER] Step 4: Holding for 800ms engine initialization...");
       await Future.delayed(const Duration(milliseconds: 800));
 
       // Step 5: Run JS Matrix
-      print(
-        "⚡ [CONVERTER] Step 5: Injecting and executing convertDocxBytesToHtml()...",
-      );
+      print("⚡ [CONVERTER] Step 5: Injecting document stream to Mammoth...");
       await _activeController!.runJavaScript(
         "convertDocxBytesToHtml('$base64Document');",
       );
-      print("⚡ [CONVERTER] JavaScript string execution completed.");
 
-      // Step 6: Wait for JS callback with a definitive timeout
+      // Step 6: Wait for JS callback
       print(
-        "⏳ [CONVERTER] Step 6: Waiting up to 15 seconds for JS Completer token...",
+        "⏳ [CONVERTER] Step 6: Waiting up to 15 seconds for layout response...",
       );
       final htmlOutput = await completer.future.timeout(
         const Duration(seconds: 15),
-        onTimeout: () => throw TimeoutException(
-          "The JavaScript conversion engine timed out.",
-        ),
+        onTimeout: () =>
+            throw TimeoutException("The Mammoth conversion engine timed out."),
       );
 
-      // Step 7: Build document wrapper
+      // ─── STEP 7: GLOBAL TYPOGRAPHY & LAYOUT INJECTION ───
       print(
-        "📝 [CONVERTER] Step 7: Compiling raw HTML to structured document string...",
+        "📝 [CONVERTER] Step 7: Structuring document rules and standard styling elements...",
       );
+      String cleanOutput = htmlOutput;
       final structuredHtml =
           """
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="utf-8">
-        <style>
-          body { font-family: sans-serif; margin: 20px; line-height: 1.5; }
-          img { max-width: 100%; height: auto; }
-          table { border-collapse: collapse; width: 100%; margin: 12px 0; }
-          th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        </style>
-      </head>
-      <body>
-        $htmlOutput
-      </body>
-      </html>
-      """;
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    * {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      box-sizing: border-box !important;
+    }
+
+    @page { 
+      margin: 15mm !important; /* Controlled edge margin for native PDF engine */
+    }
+    
+    html, body { 
+      background-color: #ffffff !important; 
+      margin: 0px !important; 
+      padding: 0px !important;
+      height: auto !important;
+    }
+
+    .docx-wrapper {
+      background: transparent !important;
+      padding: 0px !important;
+      margin: 0px !important;
+      height: auto !important;
+      display: block !important;
+    }
+    
+    .docx {
+      background-color: #ffffff !important;
+      box-shadow: none !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      height: auto !important; 
+      min-height: 0 !important;
+      padding: 10px !important; 
+      margin: 0px auto !important;
+      display: block !important;
+    }
+
+    .docx section, .docx-page {
+      background: transparent !important;
+      box-shadow: none !important;
+      width: 100% !important;
+      height: auto !important; 
+      min-height: 0 !important;
+      padding: 0px !important;
+      margin: 0px 0px 20px 0px !important;
+      page-break-inside: auto !important; 
+    }
+
+    /* 🚨 SHAPE TEXT SAFETY NET 🚨 */
+    /* Ensure text inside rescued cards is explicitly dark and visible */
+    .docx-textbox-content, 
+    .docx-textbox-content p, 
+    .docx-textbox-content span {
+      color: #111111 !important; /* Forces text to show against the card fill */
+    }
+
+    /* Image guardrails */
+    img {
+      max-width: 100% !important;
+      height: auto !important;
+      display: block !important;
+    }
+
+    /* Keep data tables fluid */
+    .docx table {
+      width: 100% !important;
+      max-width: 100% !important;
+      border-collapse: collapse !important;
+      page-break-inside: auto !important;
+    }
+    
+    tr {
+      page-break-inside: avoid !important; 
+      page-break-after: auto !important;
+    }
+  </style>
+</head>
+<body>
+  $cleanOutput
+</body>
+</html>
+""";
 
       // Step 8: PDF Compilation
       print(
-        "🖨️ [CONVERTER] Step 8: Passing HTML block to native OS print frame...",
+        "🖨️ [CONVERTER] Step 8: Feeding flat HTML to native OS print frame...",
       );
       final converter = HtmlToPdfConverter();
       final pdfBytes = await converter.convertHtmlToPdfBytes(
         html: structuredHtml,
       );
-      print(
-        "🖨️ [CONVERTER] Success: Generated ${pdfBytes.length} native PDF bytes.",
-      );
 
       final outputFile = File(outputPath);
       await outputFile.writeAsBytes(pdfBytes);
-      print("🎉 [CONVERTER] Step 9: Saved file to output path. Task complete.");
+      print(
+        "🎉 [CONVERTER] Step 9: Saved file via clean Mammoth engine pipeline.",
+      );
 
       return outputFile;
     } catch (e, stacktrace) {
-      print("🚨 [CONVERTER CRASH] Pipeline stopped working!");
-      print("🚨 Error Detail: $e");
+      print("🚨 [CONVERTER CRASH] $e");
       print("🚨 Stacktrace: $stacktrace");
-      rethrow; // Forces the UI layer try/catch block to register the error and hide the loading spinner
+      rethrow;
     }
   }
 }

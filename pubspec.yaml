@@ -24,6 +24,7 @@ dependencies:
   webview_flutter: ^4.8.0 
   printing: ^5.13.2
   flutter_native_html_to_pdf: ^3.0.1
+  archive: ^3.3.6
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -38,7 +38,7 @@ class _TestUiRunnerAppState extends State<TestUiRunnerApp> {
       publicDir = await getApplicationDocumentsDirectory();
     }
 
-    if (publicDir == null || !publicDir.existsSync()) {
+    if (!publicDir.existsSync()) {
       publicDir = await getExternalStorageDirectory();
     }
 
@@ -335,7 +335,7 @@ class _TestUiRunnerAppState extends State<TestUiRunnerApp> {
       publicDir = await getApplicationDocumentsDirectory();
     }
 
-    if (publicDir == null || !publicDir.existsSync()) {
+    if (!publicDir.existsSync()) {
       publicDir = await getExternalStorageDirectory();
     }
 

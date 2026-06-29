@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:velocity/core/theme/app_colors.dart';
 import 'package:velocity/screens/homePage.dart';
-import 'package:velocity/test/test_ui_runner.dart';
 
 void main() {
   runApp(MainApp());

@@ -2,27 +2,127 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <script src="mammoth.browser.min.js"></script>
+    <script src="jszip.min.js"></script>
+    <script src="docx-preview.min.js"></script>
     <script>
+        async function convertBlobsToBase64(container) {
+            const images = container.getElementsByTagName('img');
+            for (let i = 0; i < images.length; i++) {
+                const img = images[i];
+                if (img.src && img.src.startsWith('blob:')) {
+                    const base64 = await fetchBlobAsBase64(img.src);
+                    if (base64) img.src = base64;
+                }
+            }
+            
+            const allElements = container.getElementsByTagName('*');
+            for (let j = 0; j < allElements.length; j++) {
+                const el = allElements[j];
+                const bg = el.style.backgroundImage;
+                if (bg && bg.includes('blob:')) {
+                    const match = bg.match(/url\("?(blob:[^"\)]+)"?\)/);
+                    if (match && match[1]) {
+                        const base64Bg = await fetchBlobAsBase64(match[1]);
+                        if (base64Bg) el.style.backgroundImage = `url("${base64Bg}")`;
+                    }
+                }
+            }
+        }
+
+        async function fetchBlobAsBase64(blobUrl) {
+            try {
+                const response = await fetch(blobUrl);
+                const blob = await response.blob();
+                return await new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => resolve(reader.result);
+                    reader.readAsDataURL(blob);
+                });
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function rescueFloatingShapes(container) {
+            // 1. Target all layout wrappers trying to use hardcoded coordinates
+            const wrappers = container.querySelectorAll('.docx-drawing, .docx-textbox');
+            wrappers.forEach(el => {
+                el.style.setProperty('position', 'relative', 'important');
+                el.style.setProperty('top', 'auto', 'important');
+                el.style.setProperty('left', 'auto', 'important');
+                el.style.setProperty('right', 'auto', 'important');
+                el.style.setProperty('bottom', 'auto', 'important');
+                el.style.setProperty('transform', 'none', 'important');
+                el.style.setProperty('display', 'block', 'important');
+                el.style.setProperty('width', '100%', 'important');
+                el.style.setProperty('max-width', '100%', 'important');
+                el.style.setProperty('height', 'auto', 'important');
+                el.style.setProperty('min-height', '0', 'important');
+                el.style.setProperty('margin', '16px 0', 'important');
+                el.style.setProperty('padding', '0', 'important');
+                el.style.setProperty('background', 'transparent', 'important');
+                el.style.setProperty('box-shadow', 'none', 'important');
+            });
+
+            // 2. KILL THE PINK BOX GRAPHIC LAYER (SVGs / Canvases inside text boxes)
+            // This prevents empty vector layers from hogging space and pushing text away
+            const vectors = container.querySelectorAll('.docx-drawing svg, .docx-drawing canvas');
+            vectors.forEach(v => {
+                v.style.setProperty('display', 'none', 'important');
+            });
+
+            // 3. TRANSFORMS TEXT CONTAINERS INTO NATIVE CALLOUT CARDS
+            const textContents = container.querySelectorAll('.docx-textbox-content');
+            textContents.forEach(content => {
+                content.style.setProperty('position', 'relative', 'important');
+                content.style.setProperty('display', 'block', 'important');
+                content.style.setProperty('height', 'auto', 'important');
+                content.style.setProperty('overflow', 'visible', 'important');
+                
+                // Emulate a beautiful, clean presentation box layout natively
+                content.style.setProperty('background-color', '#fff5f6', 'important'); // Soft tinted callout pink
+                content.style.setProperty('border', '1px solid #ffe3e6', 'important');
+                content.style.setProperty('border-radius', '8px', 'important');
+                content.style.setProperty('padding', '18px', 'important');
+                content.style.setProperty('margin', '0px', 'important');
+            });
+        }
+
         function convertDocxBytesToHtml(base64Str) {
             try {
-                // 1. Decode the base64 string stream sent from Dart back into binary
-                var binaryString = window.atob(base64Str);
-                var len = binaryString.length;
-                var bytes = new Uint8Array(len);
-                for (var i = 0; i < len; i++) {
+                const binaryString = window.atob(base64Str);
+                const len = binaryString.length;
+                const bytes = new Uint8Array(len);
+                for (let i = 0; i < len; i++) {
                     bytes[i] = binaryString.charCodeAt(i);
                 }
-                
-                // 2. Run Mammoth engine over the raw binary array buffer
-                mammoth.convertToHtml({arrayBuffer: bytes.buffer})
-                    .then(function(result) {
-                        // 3. Pass the perfectly styled HTML back to Flutter channel
-                        DocxBridge.postMessage(result.value);
-                    })
-                    .catch(function(err) {
-                        DocxBridge.postMessage("ERROR: " + err.message);
-                    });
+
+                const container = document.getElementById("canvas-container");
+                container.innerHTML = ""; 
+
+                // Execute a clean native layout generation path
+                docx.renderAsync(bytes.buffer, container, null, { 
+                    experimental: true,
+                    debug: false
+                })
+                .then(async () => {
+                    // Step A: Strip vector layers and build structural callout cards
+                    rescueFloatingShapes(container);
+
+                    // Step B: Resolve base64 document attachments
+                    await convertBlobsToBase64(container);
+                    
+                    // Step C: Compile dynamic styling packets
+                    const styles = Array.from(document.querySelectorAll('style'))
+                        .map(s => s.outerHTML)
+                        .join('\n');
+                    
+                    const completePayload = styles + "\n" + container.innerHTML;
+                    DocxBridge.postMessage(completePayload);
+                })
+                .catch((err) => {
+                    DocxBridge.postMessage("ERROR: " + err.message);
+                });
             } catch (e) {
                 DocxBridge.postMessage("ERROR: " + e.message);
             }
@@ -30,6 +130,6 @@
     </script>
 </head>
 <body>
-    <div id="status">Offline Engine Standby...</div>
+    <div id="canvas-container"></div>
 </body>
 </html>

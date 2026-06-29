@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:velocity/core/helper/sharedWidgets.dart';
 import 'package:velocity/core/helper/util.dart';
 import 'package:velocity/data/format_registry.dart';
