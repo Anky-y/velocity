@@ -1,8 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:gal/gal.dart';
 import 'package:open_filex/open_filex.dart';
+import 'package:path/path.dart' as path;
 import 'package:share_plus/share_plus.dart';
+import 'package:velocity/data/recent_file_service.dart';
 import 'package:velocity/models/fileOperationModel.dart';
+import 'package:velocity/models/recentFileModel.dart';
 
 class ConversionCompletedPage extends StatelessWidget {
   final List<FileOperationItem> operations;
@@ -12,31 +17,52 @@ class ConversionCompletedPage extends StatelessWidget {
   Future<void> _downloadAllFiles(BuildContext context) async {
     try {
       int savedMediaCount = 0;
+      final recentsService = RecentFilesService();
 
       for (var item in operations) {
         final path = item.file.path;
         if (path == null) continue;
 
+        final file = File(path);
+        if (!await file.exists()) continue;
+
         // Check if it's an image or video to save to public gallery
         final type = item.fileMediaType;
+
+        bool saveSuccess = false;
         if (type == 'image') {
           await Gal.putImage(path);
+          saveSuccess = true;
           savedMediaCount++;
         } else if (type == 'video') {
           await Gal.putVideo(path);
+          saveSuccess = true;
           savedMediaCount++;
         } else {
           // Fallback: If it's a document/audio, share_plus or a custom directory picker is required
           // For this clean UI, we'll let share handles docs, or alert user
         }
+        if (saveSuccess) {
+          final filename = path.split('/').last;
+          final fileSize = await file.length();
+
+          await recentsService.addRecentFile(
+            RecentFile(
+              id: DateTime.now().microsecondsSinceEpoch.toString(),
+              path: path,
+              fileName: filename,
+              timestamp: DateTime.now().millisecondsSinceEpoch,
+              size: fileSize,
+              fileMediaType: type,
+            ),
+          );
+        }
       }
 
-      if (context.mounted) {
+      if (context.mounted && savedMediaCount > 0) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              "Successfully saved $savedMediaCount media items to your Gallery!",
-            ),
+            content: Text("Successfully saved $savedMediaCount media items!"),
             backgroundColor: const Color(0xFF64FFDA),
           ),
         );
