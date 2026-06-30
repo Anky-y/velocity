@@ -178,7 +178,7 @@ class FilePickerPage extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: bottomNavBar(),
+      bottomNavigationBar: bottomNavBar(context, 0),
     );
   }
 }
