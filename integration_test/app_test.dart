@@ -47,7 +47,7 @@ void main() {
           sourceBytes = img.BmpEncoder().encode(dummyImg);
           break;
         case 'ico':
-          sourceBytes = img.IcoEncoder().encode(dummyImg);
+          sourceBytes = img.encodeIco(dummyImg);
           break;
         case 'jpg':
         case 'jpeg':
@@ -68,6 +68,8 @@ void main() {
       // Fetch every target paired to this exact format
       final targets = FormatRegistry.getAvailableTargets(sourceExt);
 
+      final fileType = FormatRegistry.extensionToCategory[sourceExt];
+
       for (String targetExt in targets) {
         // Skip webp outputs since we can only read webp on-device
         if (targetExt.toLowerCase() == 'webp') continue;
@@ -78,6 +80,7 @@ void main() {
           filePath: sourceFile.path,
           fromExtension: sourceExt,
           targetExtension: targetExt,
+          fileType: fileType,
           onProgress: (_) {},
         );
 

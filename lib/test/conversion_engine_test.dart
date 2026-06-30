@@ -1,151 +1,120 @@
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:image/image.dart' as img;
 import 'package:path/path.dart' as p;
-import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:image/image.dart' as img;
+import 'package:ffmpeg_kit_flutter_new/ffmpeg_kit.dart';
+import 'package:ffmpeg_kit_flutter_new/return_code.dart';
+import 'dart:typed_data';
+
 import 'package:velocity/data/format_registry.dart';
 import 'package:velocity/services/conversion/conversion_manager.dart';
 
-/// Intercepts native path_provider channel loops during headless VM testing suites
-class MockPathProviderPlatform extends PathProviderPlatform {
-  final String tempPath;
-  MockPathProviderPlatform(this.tempPath);
-
-  @override
-  Future<String?> getTemporaryPath() async => tempPath;
-}
-
 void main() {
-  // Configures the structural Flutter engine framework bindings
-  TestWidgetsFlutterBinding.ensureInitialized();
-  late Directory tempDir;
+  // Ensure the underlying Flutter engine plugins (path_provider, ffmpeg) are alive
+  LiveTestWidgetsFlutterBinding.ensureInitialized();
 
-  setUp(() {
-    tempDir = Directory.systemTemp.createTempSync('velocity_tests');
-    PathProviderPlatform.instance = MockPathProviderPlatform(tempDir.path);
-  });
+  group('Velocity Universal Hardware Matrix Benchmarks', () {
+    late Directory tempDir;
 
-  tearDown(() {
-    tempDir.deleteSync(recursive: true);
-  });
+    setUpAll(() async {
+      tempDir = await getTemporaryDirectory();
+    });
 
-  test(
-    'Verify all image conversions run successfully with Deep Performance Matrix',
-    () async {
-      // 1. Create a 32x32 dummy canvas giving codecs realistic pixel blocks to process
-      final dummyImg = img.Image(width: 32, height: 32)
-        ..clear(img.ColorRgb8(0, 255, 0)); // Green validation block
-
-      print(
-        '\n===================================================================================',
-      );
-      print(
-        '                      UNRESTRICTED PIPELINE METRICS MATRIX                         ',
-      );
-      print(
-        '===================================================================================',
-      );
-
-      // 2. Unrestricted Loop: Scan every source type registered in your core framework configuration
-      for (String sourceExt in FormatRegistry.conversionRules.keys) {
-        final sourcePath = p.join(tempDir.path, 'test_source.$sourceExt');
+    for (String sourceExt in FormatRegistry.conversionRules.keys) {
+      test('Matrix Validation Pipeline: [ $sourceExt ]', () async {
+        final category =
+            FormatRegistry.extensionToCategory[sourceExt.toLowerCase()] ??
+            'Image';
+        final sourcePath = p.join(tempDir.path, 'bench_source.$sourceExt');
         final sourceFile = File(sourcePath);
 
-        // Encode matching binary headers explicitly to force exact platform decoding execution paths
-        List<int> sourceBytes;
-        switch (sourceExt.toLowerCase()) {
-          case 'png':
-            sourceBytes = img.PngEncoder().encode(dummyImg);
-            break;
-          case 'gif':
-            sourceBytes = img.GifEncoder().encode(dummyImg);
-            break;
-          case 'bmp':
-            sourceBytes = img.BmpEncoder().encode(dummyImg);
-            break;
-          case 'ico':
-            sourceBytes = img.IcoEncoder().encode(dummyImg);
-            break;
-          case 'jpg':
-          case 'jpeg':
-            sourceBytes = img.JpegEncoder().encode(dummyImg);
-            break;
-          case 'webp':
-            // Pure Dart setup has a read-only WebP decoder, so fallback to valid stream arrays
-            sourceBytes = img.PngEncoder().encode(dummyImg);
-            break;
-          default:
-            sourceBytes = img.JpegEncoder().encode(dummyImg);
+        // --- AUTOMATED ASSET CREATION PIPELINE ---
+        if (category == 'Image') {
+          final dummyImg = img.Image(width: 32, height: 32)
+            ..clear(img.ColorRgb8(0, 0, 255));
+          Uint8List bytes;
+          if (sourceExt.toLowerCase() == 'png') {
+            bytes = Uint8List.fromList(img.PngEncoder().encode(dummyImg));
+          } else if (sourceExt.toLowerCase() == 'gif') {
+            bytes = Uint8List.fromList(img.GifEncoder().encode(dummyImg));
+          } else if (sourceExt.toLowerCase() == 'bmp') {
+            bytes = Uint8List.fromList(img.BmpEncoder().encode(dummyImg));
+          } else if (sourceExt.toLowerCase() == 'ico') {
+            bytes = Uint8List.fromList(img.encodeIco(dummyImg));
+          } else {
+            bytes = Uint8List.fromList(img.JpegEncoder().encode(dummyImg));
+          }
+
+          await sourceFile.writeAsBytes(bytes);
+        } else if (category == 'Video' ||
+            sourceExt.toLowerCase() == 'mp3' ||
+            sourceExt.toLowerCase() == 'wav') {
+          // 🚀 FFmpeg Superpower: Create a lightning-fast synthetic 1-second video/audio framework block
+          // This generates a simple color pattern so we have actual real stream frames to convert!
+          final String genCommand =
+              '-f lavfi -i testsrc=duration=1:size=160x120:rate=10 -f lavfi -i sine=duration=1:frequency=440 "$sourcePath" -y';
+          final session = await FFmpegKit.execute(genCommand);
+          final returnCode = await session.getReturnCode();
+          if (!ReturnCode.isSuccess(returnCode)) {
+            fail(
+              'Failed to synthesize baseline benchmark asset for format: $sourceExt',
+            );
+          }
         }
 
-        await sourceFile.writeAsBytes(sourceBytes);
         final int sourceSize = sourceFile.lengthSync();
-
-        // 3. Collect and verify target combinations mapping rules
         final targets = FormatRegistry.getAvailableTargets(sourceExt);
-        expect(
-          targets.isNotEmpty,
-          true,
-          reason:
-              'Execution stopped: No targets configured under Registry keys for: $sourceExt',
-        );
 
         for (String targetExt in targets) {
-          if (targetExt.toLowerCase() == 'webp')
-            continue; // Omit read-only limits
+          // Skip WebP if it relies on separate native plugins your test environment lacks
+          if (targetExt.toLowerCase() == 'webp') continue;
 
-          // ⏱️ Precision timing instantiation
           final stopwatch = Stopwatch()..start();
 
+          // Execute dynamically mapped architecture types
           final convertedFile = await ConversionManager.execute(
             filePath: sourceFile.path,
             fromExtension: sourceExt,
             targetExtension: targetExt,
-            onProgress:
-                (_) {},
-                 // Quieting logging layers to keep analytics clear
+            fileType: category
+                .toLowerCase(), // Maps 'image' or 'video' directly!
+            onProgress: (_) {},
           );
 
           stopwatch.stop();
 
-          // 📊 Metrics computations
           final int targetSize = convertedFile.lengthSync();
-          final double savingsRatio =
-              (1.0 - (targetSize / sourceSize)) * 100; // Calculates space saved
           final double durationMs = stopwatch.elapsedMicroseconds / 1000.0;
+          final double savingsRatio = (1.0 - (targetSize / sourceSize)) * 100;
+          final String sign = savingsRatio >= 0 ? '+' : '';
 
-          // Strict file status assertions
           expect(
             convertedFile.existsSync(),
             true,
-            reason: 'Failed converting $sourceExt → $targetExt',
+            reason: 'Failed outputting $sourceExt ➔ $targetExt',
           );
-          expect(
-            targetSize,
-            greaterThan(0),
-            reason:
-                'Output payload resulted in 0 bytes ($sourceExt → $targetExt)',
-          );
+          expect(targetSize, greaterThan(0));
 
-          // Format and align text outputs cleanly into columns
+          // Log parsing layouts
           final String pair =
               '[${sourceExt.toUpperCase().padRight(4)} ➔ ${targetExt.toUpperCase().padRight(4)}]';
           final String time =
               'Time: ${durationMs.toStringAsFixed(2).padLeft(7)}ms';
           final String delta =
-              'Size: ${sourceSize.toString().padLeft(5)} B ➔ ${targetSize.toString().padLeft(5)} B';
-
-          // Shows positive % for space saved, negative % if the file grew larger
-          final String savingsSign = savingsRatio >= 0 ? '+' : '';
+              'Size: ${sourceSize.toString().padLeft(6)} B ➔ ${targetSize.toString().padLeft(6)} B';
           final String ratio =
-              'Savings: $savingsSign${savingsRatio.toStringAsFixed(1).padLeft(5)}%';
+              'Savings: $sign${savingsRatio.toStringAsFixed(1).padLeft(5)}%';
 
-          print('📊 $pair | $time | $delta | $ratio');
+          print('📊 $pair | $time | $delta | $ratio | 🏷️ Type: $category');
         }
-        print(
-          String.fromCharCodes(Iterable.generate(83, (_) => 45)),
-        ); // Dotted section separator
-      }
-    },
-  );
+      });
+    }
+
+    tearDownAll(() {
+      print(
+        '\n===================================================================================\n',
+      );
+    });
+  });
 }

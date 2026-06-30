@@ -76,7 +76,7 @@ class _ConversionProgressPageState extends State<ConversionProgressPage> {
       } catch (error) {
         setState(() {
           operation.status = ConversionStatus.failed;
-          debugPrint("DEBUG 5: ${operation.status} ${error}");
+          debugPrint("DEBUG 5: ${operation.status} $error");
         });
       }
     }
@@ -245,7 +245,7 @@ class _ConversionProgressPageState extends State<ConversionProgressPage> {
               Expanded(
                 child: ListView.separated(
                   itemCount: widget.operations.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 12),
+                  separatorBuilder: (_, _) => const SizedBox(height: 12),
                   itemBuilder: (context, index) {
                     final item = widget.operations[index];
                     final isProcessing =
@@ -258,7 +258,7 @@ class _ConversionProgressPageState extends State<ConversionProgressPage> {
                         borderRadius: BorderRadius.circular(10),
                         border: isProcessing
                             ? Border.all(
-                                color: const Color(0xFF64FFDA).withOpacity(0.4),
+                                color: const Color(0xFF64FFDA).withValues(alpha: 0.4),
                                 width: 1.5,
                               )
                             : null,
@@ -270,7 +270,7 @@ class _ConversionProgressPageState extends State<ConversionProgressPage> {
                               Container(
                                 padding: const EdgeInsets.all(8),
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.05),
+                                  color: Colors.white.withValues(alpha: 0.05),
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Icon(

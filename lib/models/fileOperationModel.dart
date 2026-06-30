@@ -45,8 +45,9 @@ class FileOperationItem {
     final ext = originalExtension.toLowerCase();
 
     // Check common formats explicitly if Registry doesn't map backward:
-    if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'].contains(ext))
+    if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'].contains(ext)) {
       return 'image';
+    }
     if (['mp3', 'wav', 'm4a', 'flac', 'ogg'].contains(ext)) return 'audio';
     if (['mp4', 'mkv', 'mov', 'avi', 'webm'].contains(ext)) return 'video';
 
