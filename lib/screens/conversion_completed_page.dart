@@ -1,3 +1,6 @@
+
+import 'package:file_saver/file_saver.dart';
+
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -20,28 +23,33 @@ class ConversionCompletedPage extends StatelessWidget {
       final recentsService = RecentFilesService();
 
       for (var item in operations) {
+        final ext = item.selectedTargetExtension;
         final path = item.file.path;
-        if (path == null) continue;
+        final name = item.file.name;
+        print(path);
+        print(name);
+        print(ext);
 
+        
+        if (path == null || ext == null) continue;
+        
         final file = File(path);
         if (!await file.exists()) continue;
+        
+        await FileSaver.instance.saveAs(
+          name: name,
+          filePath: path,
+          fileExtension: ext,
+          mimeType:
+              MimeType.get(ext) ??
+              MimeType
+                  .other, // Dynamically fetches MimeType.jpeg, MimeType.mp3, etc.
+        );
 
-        // Check if it's an image or video to save to public gallery
-        final type = item.fileMediaType;
+        savedMediaCount++;
+        
 
-        bool saveSuccess = false;
-        if (type == 'image') {
-          await Gal.putImage(path);
-          saveSuccess = true;
-          savedMediaCount++;
-        } else if (type == 'video') {
-          await Gal.putVideo(path);
-          saveSuccess = true;
-          savedMediaCount++;
-        } else {
-          // Fallback: If it's a document/audio, share_plus or a custom directory picker is required
-          // For this clean UI, we'll let share handles docs, or alert user
-        }
+        
         if (saveSuccess) {
           final filename = path.split('/').last;
           final fileSize = await file.length();
@@ -57,6 +65,7 @@ class ConversionCompletedPage extends StatelessWidget {
             ),
           );
         }
+
       }
 
       if (context.mounted && savedMediaCount > 0) {
