@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:velocity/data/format_registry.dart';
 import 'package:velocity/models/fileOperationModel.dart';
 import 'package:velocity/screens/conversion_completed_page.dart';
 import 'package:velocity/services/conversion/conversion_manager.dart';
@@ -21,8 +22,8 @@ class _ConversionProgressPageState extends State<ConversionProgressPage> {
     super.initState();
     // Start the conversion loop immediately as soon as the page opens
     WidgetsBinding.instance.addPostFrameCallback((_) {
-    _runConversionPipeline();
-  });
+      _runConversionPipeline();
+    });
   }
 
   Future<void> _runConversionPipeline() async {
@@ -42,12 +43,14 @@ class _ConversionProgressPageState extends State<ConversionProgressPage> {
       debugPrint("DEBUG 2: ${operation.status}");
 
       try {
-        final String fileType = operation.fileMediaType;
-        // 2. Call your existing conversion engine
+        final String? fileType = FormatRegistry.getMediaType(
+          operation.originalExtension,
+        ); // 2. Call your existing conversion engine
         File convertedFile = await ConversionManager.execute(
           filePath: operation.file.path!,
           fromExtension: operation.originalExtension,
-          targetExtension: operation.selectedTargetExtension!, fileType: fileType,
+          targetExtension: operation.selectedTargetExtension!,
+          fileType: fileType,
           onProgress: (progressValue) {
             // Every time the image package processes a step, this runs!
             setState(() {
@@ -258,7 +261,9 @@ class _ConversionProgressPageState extends State<ConversionProgressPage> {
                         borderRadius: BorderRadius.circular(10),
                         border: isProcessing
                             ? Border.all(
-                                color: const Color(0xFF64FFDA).withValues(alpha: 0.4),
+                                color: const Color(
+                                  0xFF64FFDA,
+                                ).withValues(alpha: 0.4),
                                 width: 1.5,
                               )
                             : null,

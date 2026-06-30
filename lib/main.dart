@@ -7,8 +7,8 @@ import 'package:velocity/core/theme/app_colors.dart';
 
 final ValueNotifier<ThemeMode> themeNotifier = ValueNotifier(ThemeMode.system);
 
-
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(MainApp());
 }
 

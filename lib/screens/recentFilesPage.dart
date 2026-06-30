@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:velocity/core/theme/app_colors.dart';
-import 'package:velocity/data/recent_file_service.dart';
+import 'package:velocity/data/format_registry.dart';
+import 'package:velocity/services/recent_file_service.dart';
 import 'package:velocity/models/recentFileModel.dart';
 import 'package:velocity/screens/homePage.dart';
 import 'package:open_filex/open_filex.dart';
@@ -56,22 +57,19 @@ class _RecentFilesPageState extends State<RecentFilesPage> {
   bool _matchesFilter(RecentFile file) {
     if (_selectedFilter == "All Formats") return true;
 
-    final mediaType = file.fileMediaType.toLowerCase();
-    final ext = file.fileName.split('.').last.toLowerCase();
-
     switch (_selectedFilter) {
       case "Image":
-        return mediaType == 'image' ||
-            ['jpg', 'jpeg', 'png', 'gif', 'webp'].contains(ext);
+        return file.mediaType == "image";
+
       case "Video":
-        return mediaType == 'video' ||
-            ['mp4', 'mkv', 'mov', 'avi'].contains(ext);
+        return file.mediaType == "video";
+
       case "Audio":
-        return mediaType == 'audio' ||
-            ['mp3', 'wav', 'm4a', 'flac'].contains(ext);
+        return file.mediaType == "audio";
+
       case "Documents":
-        return mediaType == 'document' ||
-            ['pdf', 'docx', 'doc', 'txt', 'xlsx', 'pptx'].contains(ext);
+        return file.mediaType == "document";
+
       default:
         return true;
     }
@@ -84,14 +82,12 @@ class _RecentFilesPageState extends State<RecentFilesPage> {
     return "${(bytes / 1024).toStringAsFixed(1)} KB";
   }
 
-  IconData _getFileIcon(String mediaType, String ext) {
-    final mediaLower = mediaType.toLowerCase();
+  IconData _getFileIcon(String? mediaType, String ext) {
     final extLower = ext.toLowerCase();
 
-    if (mediaLower == 'image') return Icons.image_outlined;
-    if (mediaLower == 'video') return Icons.movie_creation_outlined;
-    if (mediaLower == 'audio' || extLower == 'mp3')
-      return Icons.audiotrack_outlined;
+    if (mediaType == 'image') return Icons.image_outlined;
+    if (mediaType == 'video') return Icons.movie_creation_outlined;
+    if (mediaType == 'audio') return Icons.audiotrack_outlined;
     if (extLower == 'pdf') return Icons.picture_as_pdf_outlined;
     return Icons.description_outlined;
   }
@@ -173,9 +169,13 @@ class _RecentFilesPageState extends State<RecentFilesPage> {
       case 'delete_file':
         // Dual-action safety delete: eliminates registry entry AND local system track
         try {
+          debugPrint(fileItem.path);
           if (await file.exists()) {
             await file.delete();
           }
+          debugPrint(
+            await file.exists() ? "Still exists" : "Deleted successfully",
+          );
           // Remove the single item signature trace dynamically via cache service
           await RecentFilesService().removeSingleRecord(fileItem.path);
           setState(() {}); // Refresh stream state pipeline
@@ -232,7 +232,7 @@ class _RecentFilesPageState extends State<RecentFilesPage> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    "Your file conversion history for the last 30 days.",
+                    "Your file conversion history ",
                     style: TextStyle(color: textMuted, fontSize: 14),
                   ),
                   const SizedBox(height: 20),
@@ -263,7 +263,6 @@ class _RecentFilesPageState extends State<RecentFilesPage> {
                             ),
                           )
                         : _buildGroupedListView(
-                            filteredRecents,
                             _groupFilesByDate(filteredRecents),
                             textMuted,
                           ),
@@ -279,7 +278,6 @@ class _RecentFilesPageState extends State<RecentFilesPage> {
   }
 
   Widget _buildGroupedListView(
-    List<RecentFile> rawList,
     Map<String, List<RecentFile>> groupedData,
     Color textMuted,
   ) {
@@ -323,7 +321,8 @@ class _RecentFilesPageState extends State<RecentFilesPage> {
               physics: const NeverScrollableScrollPhysics(),
               itemBuilder: (context, itemIdx) {
                 final item = items[itemIdx];
-                final targetExt = item.fileName.split('.').last.toUpperCase();
+                final targetExt = item.targetExtension.toUpperCase();
+                final mediaType = item.mediaType;
                 final timeString = DateFormat(
                   'hh:mm a',
                 ).format(DateTime.fromMillisecondsSinceEpoch(item.timestamp));
@@ -351,7 +350,7 @@ class _RecentFilesPageState extends State<RecentFilesPage> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Icon(
-                          _getFileIcon(item.fileMediaType, targetExt),
+                          _getFileIcon(mediaType, targetExt),
                           color: Theme.of(context).colorScheme.primary,
                           size: 22,
                         ),
@@ -376,9 +375,7 @@ class _RecentFilesPageState extends State<RecentFilesPage> {
                             Row(
                               children: [
                                 _buildExtensionBadge(
-                                  item.fileMediaType == 'image'
-                                      ? 'PNG'
-                                      : 'DOCX',
+                                  item.sourceExtension.toUpperCase(),
                                 ),
                                 paddingBoxHorizontal(4),
                                 Icon(
@@ -387,7 +384,10 @@ class _RecentFilesPageState extends State<RecentFilesPage> {
                                   size: 12,
                                 ),
                                 paddingBoxHorizontal(4),
-                                _buildExtensionBadge(targetExt, isTarget: true),
+                                _buildExtensionBadge(
+                                  item.targetExtension.toUpperCase(),
+                                  isTarget: true,
+                                ),
                                 const SizedBox(width: 8),
                                 Container(
                                   width: 3,

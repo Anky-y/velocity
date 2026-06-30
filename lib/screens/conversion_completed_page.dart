@@ -1,16 +1,13 @@
-
-import 'package:file_saver/file_saver.dart';
-
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:gal/gal.dart';
 import 'package:open_filex/open_filex.dart';
-import 'package:path/path.dart' as path;
 import 'package:share_plus/share_plus.dart';
-import 'package:velocity/data/recent_file_service.dart';
+import 'package:velocity/data/format_registry.dart';
+import 'package:velocity/services/recent_file_service.dart';
 import 'package:velocity/models/fileOperationModel.dart';
 import 'package:velocity/models/recentFileModel.dart';
+import 'package:velocity/services/media_store_service.dart';
 
 class ConversionCompletedPage extends StatelessWidget {
   final List<FileOperationItem> operations;
@@ -22,56 +19,45 @@ class ConversionCompletedPage extends StatelessWidget {
       int savedMediaCount = 0;
       final recentsService = RecentFilesService();
 
-      for (var item in operations) {
-        final ext = item.selectedTargetExtension;
-        final path = item.file.path;
-        final name = item.file.name;
-        print(path);
-        print(name);
-        print(ext);
+      for (final item in operations) {
+        final srcExt = item.selectedTargetExtension;
+        final targetExt = item.originalExtension;
+        final filePath = item.file.path;
 
-        
-        if (path == null || ext == null) continue;
-        
-        final file = File(path);
+        if (filePath == null || srcExt == null) continue;
+
+        final file = File(filePath);
+
         if (!await file.exists()) continue;
-        
-        await FileSaver.instance.saveAs(
-          name: name,
-          filePath: path,
-          fileExtension: ext,
-          mimeType:
-              MimeType.get(ext) ??
-              MimeType
-                  .other, // Dynamically fetches MimeType.jpeg, MimeType.mp3, etc.
+
+        // Save into the appropriate public location
+        final result = await MediaStoreService.save(
+          filePath: filePath,
+          mediaType: FormatRegistry.getMediaType(srcExt),
         );
 
+        final savedPath = result['uri'];
+        final savedName = result['name'];
+        debugPrint("Saved path: $savedPath");
         savedMediaCount++;
-        
 
-        
-        if (saveSuccess) {
-          final filename = path.split('/').last;
-          final fileSize = await file.length();
-
-          await recentsService.addRecentFile(
-            RecentFile(
-              id: DateTime.now().microsecondsSinceEpoch.toString(),
-              path: path,
-              fileName: filename,
-              timestamp: DateTime.now().millisecondsSinceEpoch,
-              size: fileSize,
-              fileMediaType: type,
-            ),
-          );
-        }
-
+        await recentsService.addRecentFile(
+          RecentFile(
+            id: DateTime.now().microsecondsSinceEpoch.toString(),
+            fileName: savedName,
+            path: savedPath,
+            timestamp: DateTime.now().millisecondsSinceEpoch,
+            size: await file.length(),
+            sourceExtension: srcExt,
+            targetExtension: targetExt,
+          ),
+        );
       }
 
       if (context.mounted && savedMediaCount > 0) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("Successfully saved $savedMediaCount media items!"),
+            content: Text("Successfully saved $savedMediaCount files!"),
             backgroundColor: const Color(0xFF64FFDA),
           ),
         );
@@ -105,6 +91,59 @@ class ConversionCompletedPage extends StatelessWidget {
       );
     }
   }
+
+  // Future<void> saveConvertedFile({
+  //   required String path,
+  //   required String extension,
+  // }) async {
+  //   final category = FormatRegistry.extensionToCategory[extension];
+
+  //   switch (category) {
+  //     case "Image":
+  //       await MediaStore().saveFile(
+  //         tempFilePath: path,
+  //         dirType: DirType.photo,
+  //         dirName: DirName.pictures,
+  //         relativePath: "Velocity",
+  //       );
+  //       break;
+
+  //     case "Video":
+  //       await MediaStore().saveFile(
+  //         tempFilePath: path,
+  //         dirType: DirType.video,
+  //         dirName: DirName.movies,
+  //         relativePath: "Velocity",
+  //       );
+  //       break;
+
+  //     case "Audio":
+  //       await MediaStore().saveFile(
+  //         tempFilePath: path,
+  //         dirType: DirType.audio,
+  //         dirName: DirName.music,
+  //         relativePath: "Velocity",
+  //       );
+  //       break;
+
+  //     case "Document":
+  //       await MediaStore().saveFile(
+  //         tempFilePath: path,
+  //         dirType: DirType.download,
+  //         dirName: DirName.download,
+  //         relativePath: "Velocity",
+  //       );
+  //       break;
+
+  //     default:
+  //       await MediaStore().saveFile(
+  //         tempFilePath: path,
+  //         dirType: DirType.download,
+  //         dirName: DirName.download,
+  //         relativePath: "Velocity",
+  //       );
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {

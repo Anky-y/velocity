@@ -28,9 +28,9 @@ class ConversionManager {
 
     // 2. Set up system temporary destination cache path
     final tempDir = Directory.systemTemp;
-    final String outputFileName =
-        'temp_conv_${DateTime.now().millisecondsSinceEpoch}.$cleanTarget';
-    final String outputPath = p.join(tempDir.path, outputFileName);
+    final originalName = p.basenameWithoutExtension(filePath);
+    final outputFileName = "$originalName.$cleanTarget";
+    final outputPath = p.join(tempDir.path, outputFileName);
 
     if (sourceCategory == 'Document' || targetCategory == 'Document') {
       return await DocumentConverters.convertDocumentFormat(
@@ -124,15 +124,15 @@ class ConversionManager {
     // Build the core FFmpeg instruction payload
     String command;
     if (cleanTarget == 'gif') {
-      command = '-i "$inputPath" -vf "fps=10,scale=160:-1" -an "$outputPath"';
+      command = '-y -i "$inputPath" -vf "fps=10,scale=160:-1" -an "$outputPath"';
     } else if (cleanTarget == 'webm') {
       // Universal WebM target delivery
       command =
-          '-i "$inputPath" -c:v libvpx -pix_fmt yuv420p -c:a libvorbis "$outputPath"';
+          '-y -i "$inputPath" -c:v libvpx -pix_fmt yuv420p -c:a libvorbis "$outputPath"';
     } else if (['mp4', 'mov', 'avi', 'mkv'].contains(cleanTarget)) {
       // Standard universal container codecs
       command =
-          '-i "$inputPath" -c:v libx264 -pix_fmt yuv420p -c:a aac -b:a 128k "$outputPath"';
+          '-y -i "$inputPath" -c:v libx264 -pix_fmt yuv420p -c:a aac -b:a 128k "$outputPath"';
     } else if ([
       'png',
       'jpg',
@@ -142,10 +142,10 @@ class ConversionManager {
       'tiff',
     ].contains(cleanTarget)) {
       // 🖼️ EXTRACT FIRST FRAME FROM ANIMATION TO STATIC IMAGE
-      command = '-i "$inputPath" -vframes 1 "$outputPath" -y';
+      command = '-y -i "$inputPath" -vframes 1 "$outputPath" -y';
     } else {
       // Pure audio outputs (mp3, wav, m4a, flac, ogg)
-      command = '-i "$inputPath" -vn "$outputPath"';
+      command = '-y -i "$inputPath" -vn "$outputPath"';
     }
 
     return VideoAudioConverters.convertVideoAudioFormat(

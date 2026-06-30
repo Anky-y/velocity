@@ -1,7 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:velocity/models/recentFileModel.dart';
+import 'package:velocity/services/media_store_service.dart';
+
+
 
 class RecentFilesService {
   static final RecentFilesService _instance = RecentFilesService._internal();
@@ -10,6 +14,8 @@ class RecentFilesService {
 
   List<RecentFile> _cachedList = [];
 
+  bool _loaded = false;
+
   Future<File> _getRegistryFile() async {
     final directory = await getApplicationDocumentsDirectory();
     return File('${directory.path}/recents_registry.json');
@@ -17,6 +23,8 @@ class RecentFilesService {
 
   // Load from local storage
   Future<void> loadRegistry() async {
+    if (_loaded) return;
+
     try {
       final file = await _getRegistryFile();
       if (await file.exists()) {
@@ -26,26 +34,32 @@ class RecentFilesService {
         // Sort by newest first
         _cachedList.sort((a, b) => b.timestamp.compareTo(a.timestamp));
       }
+      _loaded = true;
     } catch (e) {
-      print("Error loading recents registry: $e");
+      debugPrint("Error loading recents registry: $e");
+      _loaded = true;
     }
   }
 
   // Get only verified existing files
   Future<List<RecentFile>> getValidRecents() async {
-    // Safety fallback: If cache was wiped or not initialized, force look up
-    if (_cachedList.isEmpty) {
-      await loadRegistry();
-    }
+    await loadRegistry();
 
     List<RecentFile> validFiles = [];
     bool registryChanged = false;
 
     for (var fileMeta in _cachedList) {
-      if (await File(fileMeta.path).exists()) {
+      bool exists;
+
+      if (fileMeta.path.startsWith("content://")) {
+        exists = await MediaStoreService.fileExists(fileMeta.path);
+      } else {
+        exists = await File(fileMeta.path).exists();
+      }
+
+      if (exists) {
         validFiles.add(fileMeta);
       } else {
-        // File was deleted outside the app, mark registry for a clean up
         registryChanged = true;
       }
     }
@@ -60,6 +74,8 @@ class RecentFilesService {
 
   // Add a record when downloaded
   Future<void> addRecentFile(RecentFile file) async {
+    await loadRegistry();
+
     // Prevent duplicate paths
     _cachedList.removeWhere((item) => item.path == file.path);
     _cachedList.insert(0, file);
@@ -76,12 +92,15 @@ class RecentFilesService {
 
   // Removes a single log entry trace when a file is manually targeted for disposal
   Future<void> removeSingleRecord(String path) async {
+    await loadRegistry();
     _cachedList.removeWhere((item) => item.path == path);
     await _saveRegistry();
   }
 
   // Wipes all text database records clean when the sweeping action is invoked
   Future<void> clearRegistry() async {
+    await loadRegistry();
+
     _cachedList.clear();
     await _saveRegistry();
   }
@@ -94,7 +113,7 @@ class RecentFilesService {
       );
       await file.writeAsString(jsonString);
     } catch (e) {
-      print("Error saving recents registry: $e");
+      debugPrint("Error saving recents registry: $e");
     }
   }
 }
