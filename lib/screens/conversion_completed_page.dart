@@ -1,3 +1,4 @@
+import 'package:file_saver/file_saver.dart';
 import 'package:flutter/material.dart';
 import 'package:gal/gal.dart';
 import 'package:open_filex/open_filex.dart';
@@ -14,21 +15,40 @@ class ConversionCompletedPage extends StatelessWidget {
       int savedMediaCount = 0;
 
       for (var item in operations) {
+        final ext = item.selectedTargetExtension;
         final path = item.file.path;
-        if (path == null) continue;
+        final name = item.file.name;
+        print(path);
+        print(name);
+        print(ext);
 
-        // Check if it's an image or video to save to public gallery
-        final type = item.fileMediaType;
-        if (type == 'image') {
-          await Gal.putImage(path);
-          savedMediaCount++;
-        } else if (type == 'video') {
-          await Gal.putVideo(path);
-          savedMediaCount++;
-        } else {
-          // Fallback: If it's a document/audio, share_plus or a custom directory picker is required
-          // For this clean UI, we'll let share handles docs, or alert user
-        }
+        if (path == null || ext == null) continue;
+
+        await FileSaver.instance.saveAs(
+          name: name,
+          filePath: path,
+          fileExtension: ext,
+          mimeType:
+              MimeType.get(ext) ??
+              MimeType
+                  .other, // Dynamically fetches MimeType.jpeg, MimeType.mp3, etc.
+        );
+
+        savedMediaCount++;
+        //   if (path == null) continue;
+
+        //   // Check if it's an image or video to save to public gallery
+        //   final type = item.fileMediaType;
+        //   if (type == 'image') {
+        //     await Gal.putImage(path);
+        //     savedMediaCount++;
+        //   } else if (type == 'video') {
+        //     await Gal.putVideo(path);
+        //     savedMediaCount++;
+        //   } else {
+        //     // Fallback: If it's a document/audio, share_plus or a custom directory picker is required
+        //     // For this clean UI, we'll let share handles docs, or alert user
+        //   }
       }
 
       if (context.mounted) {

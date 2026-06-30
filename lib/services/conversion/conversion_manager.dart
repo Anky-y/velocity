@@ -55,11 +55,10 @@ class ConversionManager {
       );
     } else {
       // 🚀 FFmpeg handles everything else (Video➔Video, Video➔Audio, Video➔GIF, Audio➔Audio)
-      return VideoAudioConverters.convertVideoAudioFormat(
+      return executeVideoAUdioConversion(
         inputPath: filePath,
         outputPath: outputPath,
-        targetExtension: cleanTarget,
-        onProgress: onProgress,
+        targetExtension: targetExtension,
       );
     }
   }
@@ -112,43 +111,46 @@ class ConversionManager {
     return outputFile;
   }
 
-  static Future<File> executeVideoConversion({
-    required String filePath,
-    required String targetExtension,
+  static Future<File> executeVideoAUdioConversion({
+    required String inputPath,
+    required String outputPath,
+    required String targetExtension, // 🚀 ADD THIS PARAMETER
     void Function(double progress)? onProgress,
   }) async {
-    final sourceFile = File(filePath);
-    final targetExtClean = targetExtension.replaceAll('.', '').toLowerCase();
-
-    if (!await sourceFile.exists()) {
-      throw Exception("Source file not found at: $filePath");
+    final cleanTarget = targetExtension
+        .toLowerCase()
+        .replaceAll('.', '')
+        .trim();
+    // Build the core FFmpeg instruction payload
+    String command;
+    if (cleanTarget == 'gif') {
+      command = '-i "$inputPath" -vf "fps=10,scale=160:-1" -an "$outputPath"';
+    } else if (cleanTarget == 'webm') {
+      // Universal WebM target delivery
+      command =
+          '-i "$inputPath" -c:v libvpx -pix_fmt yuv420p -c:a libvorbis "$outputPath"';
+    } else if (['mp4', 'mov', 'avi', 'mkv'].contains(cleanTarget)) {
+      // Standard universal container codecs
+      command =
+          '-i "$inputPath" -c:v libx264 -pix_fmt yuv420p -c:a aac -b:a 128k "$outputPath"';
+    } else if ([
+      'png',
+      'jpg',
+      'jpeg',
+      'bmp',
+      'ico',
+      'tiff',
+    ].contains(cleanTarget)) {
+      // 🖼️ EXTRACT FIRST FRAME FROM ANIMATION TO STATIC IMAGE
+      command = '-i "$inputPath" -vframes 1 "$outputPath" -y';
+    } else {
+      // Pure audio outputs (mp3, wav, m4a, flac, ogg)
+      command = '-i "$inputPath" -vn "$outputPath"';
     }
 
-    onProgress?.call(0.1); // Setup started
-
-    // 1. Generate the output path in the temporary directory
-    final tempDir = await getTemporaryDirectory();
-    final originalName = p.basenameWithoutExtension(filePath);
-
-    // --- NEW RENAMING LOGIC START ---
-    String newPath = p.join(
-      tempDir.path,
-      "${originalName}_converted.$targetExtClean",
-    );
-
-    int counter = 1;
-    // Loop continues until it finds a filename that does NOT exist
-    while (await File(newPath).exists()) {
-      newPath = p.join(
-        tempDir.path,
-        "${originalName}_converted_$counter.$targetExtClean",
-      );
-      counter++;
-    }
     return VideoAudioConverters.convertVideoAudioFormat(
-      inputPath: filePath,
-      outputPath: newPath,
-      targetExtension: targetExtension,
+      outputPath: outputPath,
+      command: command,
       onProgress: onProgress,
     );
   }
