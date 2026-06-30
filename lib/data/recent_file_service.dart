@@ -33,6 +33,11 @@ class RecentFilesService {
 
   // Get only verified existing files
   Future<List<RecentFile>> getValidRecents() async {
+    // Safety fallback: If cache was wiped or not initialized, force look up
+    if (_cachedList.isEmpty) {
+      await loadRegistry();
+    }
+
     List<RecentFile> validFiles = [];
     bool registryChanged = false;
 
@@ -64,6 +69,20 @@ class RecentFilesService {
       _cachedList = _cachedList.sublist(0, 50);
     }
 
+    await _saveRegistry();
+  }
+
+  // --- NEW WORKER HOOKS FOR THE RECENT FILES UI ---
+
+  // Removes a single log entry trace when a file is manually targeted for disposal
+  Future<void> removeSingleRecord(String path) async {
+    _cachedList.removeWhere((item) => item.path == path);
+    await _saveRegistry();
+  }
+
+  // Wipes all text database records clean when the sweeping action is invoked
+  Future<void> clearRegistry() async {
+    _cachedList.clear();
     await _saveRegistry();
   }
 
