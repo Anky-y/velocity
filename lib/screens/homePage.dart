@@ -206,7 +206,7 @@ Container bottomNavBar(BuildContext context, int currentIndex) {
           // Settings Tab
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const settingsPage()),
+            MaterialPageRoute(builder: (context) => const SettingsPage()),
           );
         }
       },
