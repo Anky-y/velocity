@@ -109,7 +109,7 @@ class ConversionCompletedPage extends StatelessWidget {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: const Color(0xFF64FFDA).withOpacity(0.2),
+                          color: const Color(0xFF64FFDA).withValues(alpha: 0.2),
                           width: 2,
                         ),
                       ),
@@ -243,7 +243,7 @@ class ConversionCompletedPage extends StatelessWidget {
                       child: ListView.separated(
                         shrinkWrap: true,
                         itemCount: operations.length,
-                        separatorBuilder: (_, __) =>
+                        separatorBuilder: (_, _) =>
                             const Divider(color: Colors.white10, height: 1),
                         itemBuilder: (context, index) {
                           final item = operations[index];
@@ -258,7 +258,7 @@ class ConversionCompletedPage extends StatelessWidget {
                                 Container(
                                   padding: const EdgeInsets.all(8),
                                   decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.05),
+                                    color: Colors.white.withValues(alpha: 0.05),
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Icon(

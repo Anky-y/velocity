@@ -96,7 +96,7 @@ class HomePage extends StatelessWidget {
                     style: TextStyle(
                       fontFamily: 'JetBrainsMonoVariable',
                       fontSize: 20,
-                      fontVariations: const <FontVariation>[
+                      fontVariations: <FontVariation>[
                         FontVariation('wght', 400.0),
                         // Custom weight between 100.0 and 900.0
                       ],
