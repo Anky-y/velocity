@@ -43,7 +43,7 @@ class _ConversionProgressPageState extends State<ConversionProgressPage> {
       debugPrint("DEBUG 2: ${operation.status}");
 
       try {
-        final String? fileType = FormatRegistry.getMediaType(
+        final String fileType = FormatRegistry.getMediaType(
           operation.originalExtension,
         ); // 2. Call your existing conversion engine
         File convertedFile = await ConversionManager.execute(

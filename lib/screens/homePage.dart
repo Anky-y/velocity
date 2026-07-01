@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:velocity/core/theme/app_colors.dart';
 import 'package:velocity/data/operation_type_data.dart';
 import 'package:velocity/models/fileOperationModel.dart';
 import 'package:velocity/screens/SettingsPage.dart';

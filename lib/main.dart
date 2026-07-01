@@ -19,7 +19,7 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ValueListenableBuilder<ThemeMode>(
       valueListenable: themeNotifier,
-      builder: (_, currentThemeMode, __) {
+      builder: (_, currentThemeMode, _) {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           theme: AppTheme.light,

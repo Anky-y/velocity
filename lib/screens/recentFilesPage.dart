@@ -10,7 +10,7 @@ import 'package:velocity/screens/homePage.dart';
 import 'package:open_filex/open_filex.dart';
 
 class RecentFilesPage extends StatefulWidget {
-  const RecentFilesPage({Key? key}) : super(key: key);
+  const RecentFilesPage({super.key});
 
   @override
   State<RecentFilesPage> createState() => _RecentFilesPageState();
@@ -307,7 +307,7 @@ class _RecentFilesPageState extends State<RecentFilesPage> {
                 Text(
                   "${items.length} ${items.length == 1 ? 'item' : 'items'}",
                   style: TextStyle(
-                    color: textMuted.withOpacity(0.7),
+                    color: textMuted.withValues(alpha: 0.7),
                     fontSize: 13,
                   ),
                 ),
@@ -346,7 +346,7 @@ class _RecentFilesPageState extends State<RecentFilesPage> {
                         decoration: BoxDecoration(
                           color: Theme.of(
                             context,
-                          ).colorScheme.primary.withOpacity(0.12),
+                          ).colorScheme.primary.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Icon(
@@ -419,7 +419,7 @@ class _RecentFilesPageState extends State<RecentFilesPage> {
                           Text(
                             timeString,
                             style: TextStyle(
-                              color: textMuted.withOpacity(0.8),
+                              color: textMuted.withValues(alpha: 0.8),
                               fontSize: 12,
                             ),
                           ),
@@ -511,7 +511,7 @@ class _RecentFilesPageState extends State<RecentFilesPage> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
           color: isActive
-              ? Theme.of(context).colorScheme.primary.withOpacity(0.15)
+              ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.15)
               : Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
@@ -541,8 +541,8 @@ class _RecentFilesPageState extends State<RecentFilesPage> {
       padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
       decoration: BoxDecoration(
         color: isTarget
-            ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
-            : Theme.of(context).colorScheme.outline.withOpacity(0.2),
+            ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)
+            : Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(4),
       ),
       child: Text(
