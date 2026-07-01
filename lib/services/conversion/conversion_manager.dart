@@ -32,7 +32,12 @@ class ConversionManager {
     final outputFileName = "$originalName.$cleanTarget";
     final outputPath = p.join(tempDir.path, outputFileName);
 
-    if (sourceCategory == 'Document' || targetCategory == 'Document') {
+    print("Source Extension: $cleanFrom");
+    print("Target Extension: $cleanTarget");
+    print("Source Category: $sourceCategory");
+    print("Target Category: $targetCategory");
+
+    if (sourceCategory == 'document' || targetCategory == 'document') {
       return await DocumentConverters.convertDocumentFormat(
         filePath: filePath,
         outputPath: outputPath,
@@ -40,8 +45,8 @@ class ConversionManager {
       );
     }
     // 3. ELEGANT TRAFFIC ROUTING:
-    else if (sourceCategory == 'Image' &&
-        targetCategory == 'Image' &&
+    else if (sourceCategory == 'image' &&
+        targetCategory == 'image' &&
         cleanFrom != 'gif' &&
         cleanTarget != 'gif' &&
         cleanFrom != 'tiff' &&
@@ -72,6 +77,7 @@ class ConversionManager {
   }) async {
     final sourceFile = File(filePath);
     final targetExtClean = targetExtension.toLowerCase();
+
     if (!await sourceFile.exists()) {
       throw Exception("Source file not found at: $filePath");
     }
@@ -124,7 +130,8 @@ class ConversionManager {
     // Build the core FFmpeg instruction payload
     String command;
     if (cleanTarget == 'gif') {
-      command = '-y -i "$inputPath" -vf "fps=10,scale=160:-1" -an "$outputPath"';
+      command =
+          '-y -i "$inputPath" -vf "fps=10,scale=160:-1" -an "$outputPath"';
     } else if (cleanTarget == 'webm') {
       // Universal WebM target delivery
       command =
