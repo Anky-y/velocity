@@ -1,3 +1,5 @@
+enum FileMediaType { image, video }
+
 class FormatRegistry {
   static const Map<String, List<String>> conversionRules = {
     // Images
@@ -57,34 +59,34 @@ class FormatRegistry {
   // Updated to distinctly separate Video and Audio formats
   static const Map<String, String> extensionToCategory = {
     // 🖼️ Images
-    'png': 'Image',
-    'jpg': 'Image',
-    'jpeg': 'Image',
-    'webp': 'Image',
-    'gif': 'Image', // Kept as image category for standard asset registration
-    'bmp': 'Image',
-    'ico': 'Image',
-    'tiff': 'Image',
-    'heic': 'Image',
+    'png': 'image',
+    'jpg': 'image',
+    'jpeg': 'image',
+    'webp': 'image',
+    'gif': 'image', // Kept as image category for standard asset registration
+    'bmp': 'image',
+    'ico': 'image',
+    'tiff': 'image',
+    'heic': 'image',
 
     // 🎬 Video Formats
-    'mp4': 'Video',
-    'mov': 'Video',
-    'webm': 'Video',
-    'avi': 'Video',
-    'mkv': 'Video',
+    'mp4': 'video',
+    'mov': 'video',
+    'webm': 'video',
+    'avi': 'video',
+    'mkv': 'video',
 
     // 🎵 Audio Formats
-    'mp3': 'Audio',
-    'wav': 'Audio',
-    'm4a': 'Audio',
-    'flac': 'Audio',
-    'ogg': 'Audio',
+    'mp3': 'audio',
+    'wav': 'audio',
+    'm4a': 'audio',
+    'flac': 'audio',
+    'ogg': 'audio',
 
     // Document Formats
-    'pdf': 'Document',
-    'docx': 'Document',
-    'txt': 'Document',
+    'pdf': 'document',
+    'docx': 'document',
+    'txt': 'document',
   };
 
   static bool isSupported(String extension) {
@@ -108,6 +110,10 @@ class FormatRegistry {
       categorized[category]!.add(target.toUpperCase());
     }
     return categorized;
+  }
+
+  static String getMediaType(String extension) {
+    return extensionToCategory[extension.toLowerCase()]!.toLowerCase();
   }
 
   /// UNIVERSAL HELPER (UNION): Pass a list of input extensions, returns ALL possible unique outputs

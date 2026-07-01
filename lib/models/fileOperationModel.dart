@@ -41,20 +41,6 @@ class FileOperationItem {
     return FormatRegistry.conversionRules[originalExtension] ?? [];
   }
 
-  String get fileMediaType {
-    final ext = originalExtension.toLowerCase();
-
-    // Check common formats explicitly if Registry doesn't map backward:
-    if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'].contains(ext)) {
-      return 'image';
-    }
-    if (['mp3', 'wav', 'm4a', 'flac', 'ogg'].contains(ext)) return 'audio';
-    if (['mp4', 'mkv', 'mov', 'avi', 'webm'].contains(ext)) return 'video';
-
-    // Default fallback group
-    return 'document';
-  }
-
   // Helper to check if this item is ready for processing
   bool get isReady => selectedTargetExtension != null;
 

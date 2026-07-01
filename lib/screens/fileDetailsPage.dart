@@ -74,9 +74,10 @@ class _FileDetailsPageState extends State<FileDetailsPage> {
 
                           // 3. Update all the individual list items (your existing logic)
                           for (var operation in widget.operations) {
-                            final validTargets = FormatRegistry.getAvailableTargets(
-                              operation.originalExtension,
-                            );
+                            final validTargets =
+                                FormatRegistry.getAvailableTargets(
+                                  operation.originalExtension,
+                                );
 
                             if (validTargets.contains(
                               universalOutputFormat.toLowerCase(),
@@ -131,7 +132,11 @@ class _FileDetailsPageState extends State<FileDetailsPage> {
                                       .withValues(alpha: 0.6),
                                   borderRadius: BorderRadius.circular(5),
                                 ),
-                                child: _getFileIcon(operation.fileMediaType),
+                                child: _getFileIcon(
+                                  FormatRegistry.getMediaType(
+                                    operation.originalExtension,
+                                  ),
+                                ),
                               ),
                             ),
                             Expanded(
@@ -213,7 +218,6 @@ class _FileDetailsPageState extends State<FileDetailsPage> {
                           ),
                         );
                       }
-                      
                     : null,
                 icon: const Icon(Icons.sync, color: Colors.black),
                 label: Text(

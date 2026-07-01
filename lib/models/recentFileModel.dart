@@ -1,10 +1,13 @@
+import 'package:velocity/data/format_registry.dart';
+
 class RecentFile {
   final String id;
   final String path;
   final String fileName;
   final int timestamp; // Epoch milliseconds
   final int size; // Bytes
-  final String fileMediaType;
+  final String sourceExtension;
+  final String targetExtension;
 
   RecentFile({
     required this.id,
@@ -12,7 +15,8 @@ class RecentFile {
     required this.fileName,
     required this.timestamp,
     required this.size,
-    required this.fileMediaType,
+    required this.sourceExtension,
+    required this.targetExtension,
   });
 
   Map<String, dynamic> toJson() => {
@@ -21,8 +25,11 @@ class RecentFile {
     'fileName': fileName,
     'timestamp': timestamp,
     'size': size,
-    'fileMediaType': fileMediaType,
+    'sourceExtension': sourceExtension,
+    'targetExtension': targetExtension,
   };
+
+  String get mediaType => FormatRegistry.getMediaType(targetExtension);
 
   factory RecentFile.fromJson(Map<String, dynamic> json) => RecentFile(
     id: json['id'],
@@ -30,6 +37,7 @@ class RecentFile {
     fileName: json['fileName'],
     timestamp: json['timestamp'],
     size: json['size'],
-    fileMediaType: json['fileMediaType'],
+    targetExtension: json['targetExtension'],
+    sourceExtension: json['sourceExtension'],
   );
 }

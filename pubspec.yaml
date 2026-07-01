@@ -25,6 +25,10 @@ dependencies:
   printing: ^5.13.2
   flutter_native_html_to_pdf: ^3.0.1
   archive: ^3.3.6
+  file_saver: ^0.4.0
+  intl: ^0.20.3
+  permission_handler: ^12.0.3
+  # media_store_plus: ^0.1.3
 dev_dependencies:
   flutter_test:
     sdk: flutter

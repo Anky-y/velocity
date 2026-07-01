@@ -7,42 +7,41 @@ import 'package:ffmpeg_kit_flutter_new/session.dart';
 class VideoAudioConverters {
   /// Pure worker function dedicated strictly to handling FFmpeg video/audio encoding tasks
   static Future<File> convertVideoAudioFormat({
-    required String inputPath,
+    required String command,
     required String outputPath,
-    required String targetExtension, // 🚀 ADD THIS PARAMETER
     void Function(double progress)? onProgress,
   }) async {
     final completer = Completer<File>();
-    final cleanTarget = targetExtension
-        .toLowerCase()
-        .replaceAll('.', '')
-        .trim();
-    // Build the core FFmpeg instruction payload
-    String command;
-    if (cleanTarget == 'gif') {
-      command = '-i "$inputPath" -vf "fps=10,scale=160:-1" -an "$outputPath"';
-    } else if (cleanTarget == 'webm') {
-      // Universal WebM target delivery
-      command =
-          '-i "$inputPath" -c:v libvpx -pix_fmt yuv420p -c:a libvorbis "$outputPath"';
-    } else if (['mp4', 'mov', 'avi', 'mkv'].contains(cleanTarget)) {
-      // Standard universal container codecs
-      command =
-          '-i "$inputPath" -c:v libx264 -pix_fmt yuv420p -c:a aac -b:a 128k "$outputPath"';
-    } else if ([
-      'png',
-      'jpg',
-      'jpeg',
-      'bmp',
-      'ico',
-      'tiff',
-    ].contains(cleanTarget)) {
-      // 🖼️ EXTRACT FIRST FRAME FROM ANIMATION TO STATIC IMAGE
-      command = '-i "$inputPath" -vframes 1 "$outputPath" -y';
-    } else {
-      // Pure audio outputs (mp3, wav, m4a, flac, ogg)
-      command = '-i "$inputPath" -vn "$outputPath"';
-    }
+    // final cleanTarget = targetExtension
+    //     .toLowerCase()
+    //     .replaceAll('.', '')
+    //     .trim();
+    // // Build the core FFmpeg instruction payload
+    // String command;
+    // if (cleanTarget == 'gif') {
+    //   command = '-i "$inputPath" -vf "fps=10,scale=160:-1" -an "$outputPath"';
+    // } else if (cleanTarget == 'webm') {
+    //   // Universal WebM target delivery
+    //   command =
+    //       '-i "$inputPath" -c:v libvpx -pix_fmt yuv420p -c:a libvorbis "$outputPath"';
+    // } else if (['mp4', 'mov', 'avi', 'mkv'].contains(cleanTarget)) {
+    //   // Standard universal container codecs
+    //   command =
+    //       '-i "$inputPath" -c:v libx264 -pix_fmt yuv420p -c:a aac -b:a 128k "$outputPath"';
+    // } else if ([
+    //   'png',
+    //   'jpg',
+    //   'jpeg',
+    //   'bmp',
+    //   'ico',
+    //   'tiff',
+    // ].contains(cleanTarget)) {
+    //   // 🖼️ EXTRACT FIRST FRAME FROM ANIMATION TO STATIC IMAGE
+    //   command = '-i "$inputPath" -vframes 1 "$outputPath" -y';
+    // } else {
+    //   // Pure audio outputs (mp3, wav, m4a, flac, ogg)
+    //   command = '-i "$inputPath" -vn "$outputPath"';
+    // }
 
     onProgress?.call(0.2); // FFmpeg task initialization point
 
