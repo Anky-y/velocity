@@ -11,6 +11,8 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import java.io.File
 import android.util.Log
+import android.content.Intent
+import androidx.core.net.toUri
 
 class MainActivity : FlutterActivity() {
 
@@ -42,18 +44,15 @@ class MainActivity : FlutterActivity() {
                     }
 
                     try {
-                        val resultMap = hashMapOf(
-    "uri" to uri.toString(),
-    "name" to finalName,
-)
-                        result.success(resultMap)
-                    } catch (e: Exception) {
-                        result.error(
-                            "SAVE_FAILED",
-                            e.message,
-                            null
-                        )
-                    }
+    val resultMap = saveFile(path, type)
+    result.success(resultMap)
+} catch (e: Exception) {
+    result.error(
+        "SAVE_FAILED",
+        e.message,
+        null
+    )
+}
                 }
 
                 "fileExists" -> {
@@ -79,11 +78,44 @@ class MainActivity : FlutterActivity() {
                         )
                     }
                 }
+                "deleteFile" -> {
+    val uri = call.argument<String>("uri")!!
 
-                else -> result.notImplemented()
+    try {
+        deleteMediaStoreFile(uri)
+        result.success(null)
+    } catch (e: Exception) {
+        result.error("DELETE_FAILED", e.message, null)
+    }
+}
+
+"openFile" -> {
+    val uri = call.argument<String>("uri")!!
+
+    try {
+        openFile(uri)
+        result.success(null)
+    } catch (e: Exception) {
+        result.error("OPEN_FAILED", e.message, null)
+    }
+}
+
+"shareFile" -> {
+    val uri = call.argument<String>("uri")!!
+
+    try {
+        shareFile(uri)
+        result.success(null)
+    } catch (e: Exception) {
+        result.error("SHARE_FAILED", e.message, null)
+    }
+}
+
+else -> result.notImplemented()
             }
         }
     }
+
 
     private fun saveFile(
         path: String,
@@ -205,4 +237,40 @@ class MainActivity : FlutterActivity() {
             false
         }
     }
+    private fun deleteMediaStoreFile(uriString: String) {
+
+    contentResolver.delete(
+        Uri.parse(uriString),
+        null,
+        null
+    )
+}
+private fun openFile(uriString: String) {
+
+    val uri = Uri.parse(uriString)
+
+    val intent = Intent(Intent.ACTION_VIEW).apply {
+        setDataAndType(uri, contentResolver.getType(uri))
+        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    }
+
+    startActivity(intent)
+}
+
+private fun shareFile(uriString: String) {
+
+    val uri = Uri.parse(uriString)
+
+    val intent = Intent(Intent.ACTION_SEND).apply {
+        type = contentResolver.getType(uri)
+        putExtra(Intent.EXTRA_STREAM, uri)
+        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    }
+
+    startActivity(
+        Intent.createChooser(intent, "Share File")
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    )
+}
 }

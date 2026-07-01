@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:velocity/core/theme/app_colors.dart';
 import 'package:velocity/data/format_registry.dart';
+import 'package:velocity/services/media_store_service.dart';
 import 'package:velocity/services/recent_file_service.dart';
 import 'package:velocity/models/recentFileModel.dart';
 import 'package:velocity/screens/homePage.dart';
@@ -119,6 +120,18 @@ class _RecentFilesPageState extends State<RecentFilesPage> {
             TextButton(
               onPressed: () async {
                 // Call clear service routine
+                final files = await RecentFilesService().getValidRecents();
+
+                for (final file in files) {
+                  if (file.path.startsWith("content://")) {
+                    await MediaStoreService.deleteFile(file.path);
+                  } else {
+                    final f = File(file.path);
+                    if (await f.exists()) {
+                      await f.delete();
+                    }
+                  }
+                }
                 await RecentFilesService().clearRegistry();
                 Navigator.pop(context);
                 setState(() {}); // Refresh empty viewport state
@@ -142,41 +155,40 @@ class _RecentFilesPageState extends State<RecentFilesPage> {
 
   // 2. Handle 3-Dot Dropdown Selections Dynamically
   void _handleMenuAction(String action, RecentFile fileItem) async {
-    final file = File(fileItem.path);
+    if (action != 'delete_file') {
+      final exists = await MediaStoreService.fileExists(fileItem.path);
 
-    if (action != 'delete_file' && !await file.exists()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("File no longer exists at this path location."),
-        ),
-      );
-      return;
+      if (!exists) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("File no longer exists.")),
+          );
+        }
+        return;
+      }
     }
 
     switch (action) {
       case 'view_file':
-        // Native platform opening handler intent
-        await OpenFilex.open(fileItem.path);
+        await MediaStoreService.openFile(fileItem.path);
         break;
 
       case 'share_file':
-        // Uses native system dialogue presentation manager sheets
-        await Share.shareXFiles([
-          XFile(fileItem.path),
-        ], text: 'Check out my converted file!');
+        await MediaStoreService.shareFile(fileItem.path);
         break;
 
       case 'delete_file':
         // Dual-action safety delete: eliminates registry entry AND local system track
         try {
           debugPrint(fileItem.path);
-          if (await file.exists()) {
-            await file.delete();
-          }
-          debugPrint(
-            await file.exists() ? "Still exists" : "Deleted successfully",
-          );
-          // Remove the single item signature trace dynamically via cache service
+          if (fileItem.path.startsWith("content://")) {
+            await MediaStoreService.deleteFile(fileItem.path);
+          } else {
+            final f = File(fileItem.path);
+            if (await f.exists()) {
+              await f.delete();
+            }
+          } // Remove the single item signature trace dynamically via cache service
           await RecentFilesService().removeSingleRecord(fileItem.path);
           setState(() {}); // Refresh stream state pipeline
           ScaffoldMessenger.of(context).showSnackBar(

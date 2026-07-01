@@ -26,4 +26,16 @@ class MediaStoreService {
 
     return exists ?? false;
   }
+
+  static Future<void> deleteFile(String uri) async {
+    await _channel.invokeMethod("deleteFile", {"uri": uri});
+  }
+
+  static Future<void> openFile(String uri) async {
+    await _channel.invokeMethod("openFile", {"uri": uri});
+  }
+
+  static Future<void> shareFile(String uri) async {
+    await _channel.invokeMethod("shareFile", {"uri": uri});
+  }
 }
