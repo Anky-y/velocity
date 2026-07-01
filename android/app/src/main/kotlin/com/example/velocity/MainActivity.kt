@@ -10,6 +10,7 @@ import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import java.io.File
+import android.util.Log
 
 class MainActivity : FlutterActivity() {
 
@@ -31,7 +32,6 @@ class MainActivity : FlutterActivity() {
 
                     val path = call.argument<String>("path")
                     val type = call.argument<String>("type")
-
                     if (path == null || type == null) {
                         result.error(
                             "INVALID_ARGS",
@@ -42,7 +42,10 @@ class MainActivity : FlutterActivity() {
                     }
 
                     try {
-                        val resultMap = saveFile(path, type)
+                        val resultMap = hashMapOf(
+    "uri" to uri.toString(),
+    "name" to finalName,
+)
                         result.success(resultMap)
                     } catch (e: Exception) {
                         result.error(

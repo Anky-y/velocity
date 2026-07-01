@@ -20,11 +20,11 @@ class ConversionCompletedPage extends StatelessWidget {
       final recentsService = RecentFilesService();
 
       for (final item in operations) {
-        final srcExt = item.selectedTargetExtension;
-        final targetExt = item.originalExtension;
+        final srcExt = item.originalExtension;
+        final targetExt = item.selectedTargetExtension;
         final filePath = item.file.path;
 
-        if (filePath == null || srcExt == null) continue;
+        if (filePath == null || targetExt == null) continue;
 
         final file = File(filePath);
 
@@ -33,8 +33,9 @@ class ConversionCompletedPage extends StatelessWidget {
         // Save into the appropriate public location
         final result = await MediaStoreService.save(
           filePath: filePath,
-          mediaType: FormatRegistry.getMediaType(srcExt),
+          mediaType: FormatRegistry.getMediaType(targetExt),
         );
+
 
         final savedPath = result['uri'];
         final savedName = result['name'];
